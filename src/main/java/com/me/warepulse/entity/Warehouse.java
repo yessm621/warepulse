@@ -1,5 +1,6 @@
 package com.me.warepulse.entity;
 
+import com.me.warepulse.entity.base.BaseEntity;
 import jakarta.persistence.*;
 
 @Entity

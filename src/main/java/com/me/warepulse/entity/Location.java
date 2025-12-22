@@ -1,9 +1,10 @@
 package com.me.warepulse.entity;
 
+import com.me.warepulse.entity.base.BaseEntity;
 import jakarta.persistence.*;
 
 @Entity
-public class Locations extends BaseEntity {
+public class Location extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

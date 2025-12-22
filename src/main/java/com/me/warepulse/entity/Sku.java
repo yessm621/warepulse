@@ -1,9 +1,11 @@
 package com.me.warepulse.entity;
 
+import com.me.warepulse.entity.base.BaseEntity;
+import com.me.warepulse.entity.base.UnitType;
 import jakarta.persistence.*;
 
 @Entity
-public class Skus extends BaseEntity {
+public class Sku extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

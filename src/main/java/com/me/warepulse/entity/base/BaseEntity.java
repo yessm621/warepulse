@@ -1,4 +1,4 @@
-package com.me.warepulse.entity;
+package com.me.warepulse.entity.base;
 
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;

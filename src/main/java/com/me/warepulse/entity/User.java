@@ -1,9 +1,10 @@
 package com.me.warepulse.entity;
 
+import com.me.warepulse.entity.base.UserRole;
 import jakarta.persistence.*;
 
 @Entity
-public class Users {
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
