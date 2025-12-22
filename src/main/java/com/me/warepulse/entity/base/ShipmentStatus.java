@@ -5,8 +5,8 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public enum UserRole {
-    ADMIN("관리자"), OPERATOR("운영자"), SYSTEM("시스템");
+public enum ShipmentStatus {
+    PICKING("픽킹"), SHIPPED("출고"), CANCELED("취소");
 
     private final String name;
 }

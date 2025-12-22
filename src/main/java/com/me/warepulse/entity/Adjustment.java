@@ -7,31 +7,34 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import static jakarta.persistence.FetchType.LAZY;
+import static jakarta.persistence.FetchType.*;
 
 @Entity
-@Table(name = "inventory")
+@Table(name = "adjustment")
 @Getter
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Inventory extends BaseEntity {
+public class Adjustment extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "inventory_id")
+    @Column(name = "adjustment_id")
     private Long id;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "sku_id")
-    private Sku skus;
+    @JoinColumn(name = "location_id")
+    private Location location;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "location_id")
-    private Location locations;
+    @JoinColumn(name = "sku_id")
+    private Sku sku;
 
-    private int quantity = 0;
-    private int reserved = 0;
+    private int delta = 0;
 
-    //todo:: optimistic lock
-    private int version = 0;
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "user_id")
+    private User operator;
+
+    @Column(length = 1000)
+    private String reason;
 }

@@ -5,8 +5,8 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public enum UserRole {
-    ADMIN("관리자"), OPERATOR("운영자"), SYSTEM("시스템");
+public enum ReceivingStatus {
+    CREATED("생성"), INSPECTED("검수"), COMPLETED("완료");
 
     private final String name;
 }

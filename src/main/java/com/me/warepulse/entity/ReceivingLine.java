@@ -1,7 +1,7 @@
 package com.me.warepulse.entity;
 
 import com.me.warepulse.entity.base.BaseEntity;
-import com.me.warepulse.entity.base.InventoryEventType;
+import com.me.warepulse.entity.base.ReceivingStatus;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -11,33 +11,32 @@ import lombok.NoArgsConstructor;
 import static jakarta.persistence.FetchType.LAZY;
 
 @Entity
-@Table(name = "inventory_event")
+@Table(name = "receiving_line")
 @Getter
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class InventoryEvent extends BaseEntity {
+public class ReceivingLine extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "inventory_event_id")
+    @Column(name = "receiving_line_id")
     private Long id;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "inventory_id")
-    private Inventory inventories;
+    @JoinColumn(name = "receiving_id")
+    private Receiving receiving;
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "sku_id")
-    private Sku skus;
+    private Sku sku;
 
-    @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "location_id")
-    private Location locations;
+    private int expectedQty = 0;
+    private int receivedQty = 0;
 
-    @Enumerated(EnumType.STRING)
-    private InventoryEventType type;
+    @Enumerated(value = EnumType.STRING)
+    private ReceivingStatus status;
 
-    private int quantity;
-
-    //TODO:: payload, json 타입
+    // todo:: 검수 담당자, 완료 처리 담당자
+    private Long inspectedBy;
+    private Long completedBy;
 }
