@@ -7,21 +7,26 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import static jakarta.persistence.FetchType.LAZY;
+
 @Entity
-@Table(name = "warehouse")
+@Table(name = "locations")
 @Getter
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Warehouse extends BaseEntity {
+public class Location extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "warehouse_id")
+    @Column(name = "location_id")
     private Long id;
 
-    @Column(length = 200, nullable = false)
-    private String name;
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "warehouse_id")
+    private Warehouse warehouse;
 
-    @Column(length = 1000, nullable = false)
-    private String address;
+    @Column(length = 20, nullable = false)
+    private String code;
+
+    private int capacity = 0;
 }

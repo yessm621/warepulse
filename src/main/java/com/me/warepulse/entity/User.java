@@ -1,6 +1,6 @@
 package com.me.warepulse.entity;
 
-import com.me.warepulse.entity.base.BaseEntity;
+import com.me.warepulse.entity.base.UserRole;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -8,20 +8,23 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "warehouse")
+@Table(name = "users")
 @Getter
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Warehouse extends BaseEntity {
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "warehouse_id")
+    @Column(name = "user_id")
     private Long id;
 
-    @Column(length = 200, nullable = false)
-    private String name;
+    @Column(unique = true, length = 20, nullable = false, updatable = false)
+    private String username;
 
-    @Column(length = 1000, nullable = false)
-    private String address;
+    @Column(length = 20, nullable = false)
+    private String password;
+
+    @Enumerated(EnumType.STRING)
+    private UserRole role;
 }
