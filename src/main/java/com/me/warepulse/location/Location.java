@@ -1,6 +1,7 @@
-package com.me.warepulse.entity;
+package com.me.warepulse.location;
 
-import com.me.warepulse.entity.base.BaseEntity;
+import com.me.warepulse.utils.BaseEntity;
+import com.me.warepulse.warehouse.Warehouse;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -25,8 +26,8 @@ public class Location extends BaseEntity {
     @JoinColumn(name = "warehouse_id")
     private Warehouse warehouse;
 
-    @Column(length = 20, nullable = false)
-    private String code;
+    @Column(unique = true, length = 20, nullable = false)
+    private String code; // zone-rack-slot(ex. "A-01-03")
 
-    private int capacity = 0;
+    private int capacity = 0; // 창고에 수용할 수 있는 물건 수
 }

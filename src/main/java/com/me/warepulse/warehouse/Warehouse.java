@@ -1,6 +1,6 @@
-package com.me.warepulse.entity;
+package com.me.warepulse.warehouse;
 
-import com.me.warepulse.entity.base.BaseEntity;
+import com.me.warepulse.utils.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

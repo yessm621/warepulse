@@ -1,6 +1,5 @@
-package com.me.warepulse.repository;
+package com.me.warepulse.sku;
 
-import com.me.warepulse.entity.Sku;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface SkuRepository extends JpaRepository<Sku, Long> {

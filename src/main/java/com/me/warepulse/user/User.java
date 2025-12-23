@@ -1,6 +1,5 @@
-package com.me.warepulse.entity;
+package com.me.warepulse.user;
 
-import com.me.warepulse.entity.base.UserRole;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

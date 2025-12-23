@@ -1,6 +1,5 @@
-package com.me.warepulse.repository;
+package com.me.warepulse.location;
 
-import com.me.warepulse.entity.Location;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface LocationRepository extends JpaRepository<Location, Long> {
