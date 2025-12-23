@@ -1,4 +1,4 @@
-package com.me.warepulse.entity.base;
+package com.me.warepulse.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

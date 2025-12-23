@@ -1,6 +1,6 @@
 package com.me.warepulse.utils;
 
-import com.me.warepulse.entity.User;
+import com.me.warepulse.user.User;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.AuditorAware;

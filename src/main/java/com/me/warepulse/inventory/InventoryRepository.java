@@ -1,6 +1,5 @@
-package com.me.warepulse.repository;
+package com.me.warepulse.inventory;
 
-import com.me.warepulse.entity.Inventory;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface InventoryRepository extends JpaRepository<Inventory, Long> {

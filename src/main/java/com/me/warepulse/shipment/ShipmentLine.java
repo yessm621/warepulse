@@ -1,7 +1,7 @@
-package com.me.warepulse.entity;
+package com.me.warepulse.shipment;
 
-import com.me.warepulse.entity.base.BaseEntity;
-import com.me.warepulse.entity.base.ShipmentStatus;
+import com.me.warepulse.utils.BaseEntity;
+import com.me.warepulse.sku.Sku;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -34,7 +34,7 @@ public class ShipmentLine extends BaseEntity {
     private ShipmentStatus status;
 
     private int quantity = 0;
-    private int pickedQty = 0;
+    private int pickedQty = 0; // 실제 픽킹된 수량
 
     // todo:: 검수 담당자, 완료 처리 담당자
     private Long inspectedBy;

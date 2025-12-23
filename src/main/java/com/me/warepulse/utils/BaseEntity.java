@@ -1,4 +1,4 @@
-package com.me.warepulse.entity.base;
+package com.me.warepulse.utils;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
