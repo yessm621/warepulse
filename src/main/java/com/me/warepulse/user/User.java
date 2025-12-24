@@ -26,4 +26,12 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     private UserRole role;
+
+    public static User createUser(String username, String password, String role) {
+        User user = new User();
+        user.username = username;
+        user.password = password;
+        user.role = UserRole.valueOf(role);
+        return user;
+    }
 }
