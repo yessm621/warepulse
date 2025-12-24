@@ -1,5 +1,6 @@
 package com.me.warepulse.security;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.me.warepulse.security.jwt.JwtFilter;
 import com.me.warepulse.security.jwt.JwtToken;
 import com.me.warepulse.security.jwt.LoginFilter;
@@ -28,6 +29,7 @@ public class SecurityConfig {
     // Spring Security가 내부적으로 만든 인증 설정, AuthenticationManager을 꺼내기 위한 용도
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JwtToken jwtToken;
+    private final ObjectMapper objectMapper;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -61,7 +63,7 @@ public class SecurityConfig {
 
         http
                 .addFilterBefore(new JwtFilter(jwtToken), LoginFilter.class)
-                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtToken),
+                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtToken, objectMapper),
                         UsernamePasswordAuthenticationFilter.class);
 
         http
