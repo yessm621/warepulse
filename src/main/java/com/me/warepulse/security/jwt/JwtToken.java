@@ -15,8 +15,8 @@ public class JwtToken {
     private final SecretKey secretKey;
 
     // todo: 단위 테스트 시 설정 의존성을 줄이기 위한 구조 개선 필요
-    public JwtToken(@Value("${spring.jwt.secret}") String key) {
-        this.secretKey = new SecretKeySpec(key.getBytes(StandardCharsets.UTF_8),
+    public JwtToken(@Value("${spring.jwt.secret}") String secret) {
+        this.secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8),
                 Jwts.SIG.HS256.key().build().getAlgorithm());
     }
 

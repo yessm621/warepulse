@@ -21,11 +21,19 @@ public class User {
     @Column(unique = true, length = 20, nullable = false, updatable = false)
     private String username;
 
-    @Column(length = 20, nullable = false)
+    @Column(length = 200, nullable = false)
     private String password;
 
     @Enumerated(EnumType.STRING)
     private UserRole role;
+
+    public static User createUser(String username, String password) {
+        User user = new User();
+        user.username = username;
+        user.password = password;
+        user.role = UserRole.OPERATOR;
+        return user;
+    }
 
     public static User createUser(String username, String password, String role) {
         User user = new User();
