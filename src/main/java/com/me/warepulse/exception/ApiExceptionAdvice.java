@@ -17,7 +17,7 @@ public class ApiExceptionAdvice {
     public ResponseEntity<ApiResponse> exception(WarePulseException e) {
         log.error("[exceptionHandler] ex", e);
 
-        ErrorMessage errorMessage = ErrorMessage.create(e.getErrorCode().getMessage(), e.getErrorCode().getMessage());
+        ErrorMessage errorMessage = ErrorMessage.create(e.getErrorCode().getCode(), e.getErrorCode().getMessage());
 
         return new ResponseEntity<>(ApiResponse.fail(errorMessage), e.getErrorCode().getStatus());
     }

@@ -31,6 +31,10 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Transactional
     @Override
     public SignupResponse signup(SignupRequest request) {
+        String username = request.getUsername();
+        if (userRepository.existsByUsername(username)) {
+            throw new WarePulseException(ErrorCode.DUPLICATE_USER_NAME);
+        }
         User user = User.createUser(request.getUsername(), bCryptPasswordEncoder.encode(request.getPassword()));
         userRepository.save(user);
         return SignupResponse.from(user);
