@@ -5,12 +5,16 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Table(name = "users")
 @Getter
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SQLDelete(sql = "UPDATE users SET deleted = true where user_id = ?")
+@SQLRestriction("deleted = false")
 public class User {
 
     @Id
@@ -26,6 +30,8 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     private UserRole role;
+
+    private boolean deleted;
 
     public static User createUser(String username, String password) {
         User user = new User();

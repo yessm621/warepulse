@@ -11,4 +11,6 @@ public interface UserService {
     SignupResponse signup(SignupRequest request);
 
     List<UserListResponse> findUsers(String username);
+
+    void deleteUser(Long userId);
 }

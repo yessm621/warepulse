@@ -50,4 +50,12 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                 .map(UserListResponse::from)
                 .toList();
     }
+
+    @Transactional
+    @Override
+    public void deleteUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new WarePulseException(ErrorCode.USER_NOT_FOUND));
+        userRepository.delete(user);
+    }
 }
