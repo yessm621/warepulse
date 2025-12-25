@@ -2,6 +2,7 @@ package com.me.warepulse.security.jwt;
 
 import com.me.warepulse.user.CustomUserDetails;
 import com.me.warepulse.user.User;
+import com.me.warepulse.user.UserRole;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -44,8 +45,8 @@ public class JwtFilter extends OncePerRequestFilter {
         }
 
         String username = jwtToken.getUsername(token);
-        String role = jwtToken.getRole(token);
-        User user = User.createUser(username, "password_temp", role);
+        UserRole role = UserRole.valueOf(jwtToken.getRole(token).replace("ROLE_", ""));
+        User user = User.authUser(username, "password_temp", role);
 
         CustomUserDetails customUserDetails = new CustomUserDetails(user);
         Authentication authToken = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());

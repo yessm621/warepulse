@@ -35,11 +35,11 @@ public class User {
         return user;
     }
 
-    public static User createUser(String username, String password, String role) {
+    public static User authUser(String username, String password, UserRole role) {
         User user = new User();
         user.username = username;
         user.password = password;
-        user.role = UserRole.valueOf(role);
+        user.role = role;
         return user;
     }
 }
