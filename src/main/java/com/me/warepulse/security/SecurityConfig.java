@@ -22,7 +22,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 
 import java.util.Collections;
 
-@EnableMethodSecurity(prePostEnabled = true)
+@EnableMethodSecurity
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
