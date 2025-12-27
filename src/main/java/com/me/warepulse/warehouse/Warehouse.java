@@ -24,4 +24,11 @@ public class Warehouse extends BaseEntity {
 
     @Column(length = 1000, nullable = false)
     private String address;
+
+    public static Warehouse create(String name, String address) {
+        Warehouse warehouse = new Warehouse();
+        warehouse.name = name;
+        warehouse.address = address;
+        return warehouse;
+    }
 }
