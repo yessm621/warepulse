@@ -1,1 +1,2 @@
-rootProject.name = 'warepulse'
+rootProject.name = 'warepulse-multi'
+include("warepulse")
