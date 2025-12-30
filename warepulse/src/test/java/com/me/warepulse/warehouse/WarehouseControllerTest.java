@@ -3,6 +3,8 @@ package com.me.warepulse.warehouse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.me.warepulse.exception.ErrorCode;
 import com.me.warepulse.exception.WarePulseException;
+import com.me.warepulse.location.LocationService;
+import com.me.warepulse.location.dto.LocationResponse;
 import com.me.warepulse.security.WithMockCustomUser;
 import com.me.warepulse.warehouse.dto.WarehouseRequest;
 import com.me.warepulse.warehouse.dto.WarehouseResponse;
@@ -35,6 +37,9 @@ class WarehouseControllerTest {
 
     @MockitoBean
     private WarehouseService warehouseService;
+
+    @MockitoBean
+    private LocationService locationService;
 
     @Test
     @WithMockCustomUser(username = "admin", roles = "ADMIN")
@@ -111,6 +116,32 @@ class WarehouseControllerTest {
 
         mockMvc.perform(delete("/warehouses/{warehouseId}", 1L)
                         .with(csrf()))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status").value("fail"));
+    }
+
+    @Test
+    @WithMockCustomUser(username = "admin", roles = "ADMIN")
+    void findLocationByWarehouseId_success() throws Exception {
+        List<LocationResponse> responses = List.of(
+                new LocationResponse(1L, "고양-A", 1L, "A-01-01", 100, LocalDateTime.now()),
+                new LocationResponse(1L, "고양-A", 2L, "A-01-02", 100, LocalDateTime.now())
+        );
+
+        given(locationService.findLocationByWarehouseId(any())).willReturn(responses);
+
+        mockMvc.perform(get("/warehouses/{warehouseId}/locations", 1L))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("success"));
+    }
+
+    @Test
+    @WithMockCustomUser(username = "admin", roles = "ADMIN")
+    void findLocationByWarehouseId_fail_does_not_exist_warehouseId() throws Exception {
+        given(locationService.findLocationByWarehouseId(any()))
+                .willThrow(new WarePulseException(ErrorCode.WAREHOUSE_NOT_FOUND));
+
+        mockMvc.perform(get("/warehouses/{warehouseId}/locations", 1L))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.status").value("fail"));
     }

@@ -40,6 +40,10 @@ public class LocationServiceImpl implements LocationService {
 
     @Override
     public List<LocationResponse> findLocationByWarehouseId(Long warehouseId) {
+        if (!warehouseRepository.existsById(warehouseId)) {
+            throw new WarePulseException(ErrorCode.WAREHOUSE_NOT_FOUND);
+        }
+
         return locationRepository.findByWarehouseId(warehouseId)
                 .stream()
                 .map(LocationResponse::from)
