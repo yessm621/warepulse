@@ -1,10 +1,13 @@
 package com.me.warepulse.warehouse;
 
 import com.me.warepulse.exception.ApiResponse;
+import com.me.warepulse.location.LocationService;
+import com.me.warepulse.location.dto.LocationResponse;
 import com.me.warepulse.warehouse.dto.WarehouseRequest;
 import com.me.warepulse.warehouse.dto.WarehouseResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,6 +17,7 @@ import java.util.List;
 public class WarehouseController {
 
     private final WarehouseService warehouseService;
+    private final LocationService locationService;
 
     @PostMapping("/warehouses")
     public ResponseEntity<ApiResponse<WarehouseResponse>> createWarehouse(@RequestBody WarehouseRequest request) {
@@ -33,9 +37,17 @@ public class WarehouseController {
         return ResponseEntity.ok(ApiResponse.success(warehouse));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/warehouses/{warehouseId}")
     public ResponseEntity<ApiResponse> deleteWarehouse(@PathVariable("warehouseId") Long warehouseId) {
         warehouseService.deleteWarehouse(warehouseId);
         return ResponseEntity.ok(ApiResponse.successWithNoContent());
+    }
+
+    @GetMapping("/warehouses/{warehouseId}/locations")
+    public ResponseEntity<ApiResponse<List<LocationResponse>>> findLocationByWarehouseId(
+            @PathVariable("warehouseId") Long warehouseId) {
+        List<LocationResponse> locations = locationService.findLocationByWarehouseId(warehouseId);
+        return ResponseEntity.ok(ApiResponse.success(locations));
     }
 }

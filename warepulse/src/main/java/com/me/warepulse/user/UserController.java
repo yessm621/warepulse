@@ -37,4 +37,6 @@ public class UserController {
         userService.deleteUser(userId);
         return ResponseEntity.ok(ApiResponse.successWithNoContent());
     }
+
+    //todo:: 사용자 권한 변경 (ADMIN 권한만 변경 가능하도록)
 }
