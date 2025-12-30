@@ -1,6 +1,8 @@
 package com.me.warepulse.warehouse;
 
 import com.me.warepulse.exception.ApiResponse;
+import com.me.warepulse.location.LocationService;
+import com.me.warepulse.location.dto.LocationResponse;
 import com.me.warepulse.warehouse.dto.WarehouseRequest;
 import com.me.warepulse.warehouse.dto.WarehouseResponse;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +16,7 @@ import java.util.List;
 public class WarehouseController {
 
     private final WarehouseService warehouseService;
+    private final LocationService locationService;
 
     @PostMapping("/warehouses")
     public ResponseEntity<ApiResponse<WarehouseResponse>> createWarehouse(@RequestBody WarehouseRequest request) {
@@ -37,5 +40,12 @@ public class WarehouseController {
     public ResponseEntity<ApiResponse> deleteWarehouse(@PathVariable("warehouseId") Long warehouseId) {
         warehouseService.deleteWarehouse(warehouseId);
         return ResponseEntity.ok(ApiResponse.successWithNoContent());
+    }
+
+    @GetMapping("/warehouses/{warehouseId}/locations")
+    public ResponseEntity<ApiResponse<List<LocationResponse>>> findLocationByWarehouseId(
+            @PathVariable("warehouseId") Long warehouseId) {
+        List<LocationResponse> locations = locationService.findLocationByWarehouseId(warehouseId);
+        return ResponseEntity.ok(ApiResponse.success(locations));
     }
 }

@@ -26,8 +26,17 @@ public class Location extends BaseEntity {
     @JoinColumn(name = "warehouse_id")
     private Warehouse warehouse;
 
+    //todo:: warehouse와 code를 같이 묶어서 unique
     @Column(unique = true, length = 20, nullable = false)
     private String code; // zone-rack-slot(ex. "A-01-03")
 
     private int capacity = 0; // 창고에 수용할 수 있는 물건 수
+
+    public static Location create(String code, int capacity, Warehouse warehouse) {
+        Location location = new Location();
+        location.code = code;
+        location.capacity = capacity;
+        location.warehouse = warehouse;
+        return location;
+    }
 }
