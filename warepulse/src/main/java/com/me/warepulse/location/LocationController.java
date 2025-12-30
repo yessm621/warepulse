@@ -5,6 +5,7 @@ import com.me.warepulse.location.dto.LocationRequest;
 import com.me.warepulse.location.dto.LocationResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -34,6 +35,7 @@ public class LocationController {
         return ResponseEntity.ok(ApiResponse.success(location));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/locations/{locationId}")
     public ResponseEntity<ApiResponse> deleteLocation(@PathVariable("locationId") Long locationId) {
         locationService.deleteLocation(locationId);

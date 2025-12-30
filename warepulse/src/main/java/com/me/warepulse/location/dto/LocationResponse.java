@@ -10,17 +10,18 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class LocationResponse {
 
-    private Long locationId;
-    //todo:: warehouseId 추가
+    private Long warehouseId;
     private String warehouseName;
+    private Long locationId;
     private String code;
     private int capacity;
     private LocalDateTime createdAt;
 
     public static LocationResponse from(Location location) {
         return new LocationResponse(
-                location.getId(),
+                location.getWarehouse().getId(),
                 location.getWarehouse().getName(),
+                location.getId(),
                 location.getCode(),
                 location.getCapacity(),
                 location.getCreatedAt()

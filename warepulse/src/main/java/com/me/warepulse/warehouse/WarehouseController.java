@@ -7,6 +7,7 @@ import com.me.warepulse.warehouse.dto.WarehouseRequest;
 import com.me.warepulse.warehouse.dto.WarehouseResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -36,6 +37,7 @@ public class WarehouseController {
         return ResponseEntity.ok(ApiResponse.success(warehouse));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/warehouses/{warehouseId}")
     public ResponseEntity<ApiResponse> deleteWarehouse(@PathVariable("warehouseId") Long warehouseId) {
         warehouseService.deleteWarehouse(warehouseId);
