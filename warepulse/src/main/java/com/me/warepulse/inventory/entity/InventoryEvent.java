@@ -1,27 +1,33 @@
-package com.me.warepulse.inventory;
+package com.me.warepulse.inventory.entity;
 
-import com.me.warepulse.utils.BaseEntity;
 import com.me.warepulse.location.Location;
 import com.me.warepulse.sku.Sku;
+import com.me.warepulse.utils.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import static jakarta.persistence.FetchType.LAZY;
 
 @Entity
-@Table(name = "inventory")
+@Table(name = "inventory_event")
 @Getter
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Inventory extends BaseEntity {
+public class InventoryEvent extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "inventory_id")
+    @Column(name = "inventory_event_id")
     private Long id;
+
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "inventory_id")
+    private Inventory inventories;
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "sku_id")
@@ -31,9 +37,13 @@ public class Inventory extends BaseEntity {
     @JoinColumn(name = "location_id")
     private Location locations;
 
-    private int quantity = 0; // location 위치에 물리적으로 존재하는 총 수량
-    private int reserved = 0; // 픽킹 등으로 예약된 수량 (실제 가용 수량 = quantity - reserved)
+    @Enumerated(EnumType.STRING)
+    private InventoryEventType type;
 
-    //todo:: optimistic lock
-    private int version = 0;
+    private int quantity;
+
+    // todo:: payload, json 타입
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(columnDefinition = "clob")
+    private String payload;
 }

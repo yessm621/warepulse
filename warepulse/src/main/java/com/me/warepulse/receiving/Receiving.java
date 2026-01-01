@@ -1,7 +1,7 @@
 package com.me.warepulse.receiving;
 
 import com.me.warepulse.utils.BaseEntity;
-import com.me.warepulse.inventory.Inventory;
+import com.me.warepulse.inventory.entity.Inventory;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

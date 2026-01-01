@@ -1,4 +1,4 @@
-package com.me.warepulse.inventory;
+package com.me.warepulse.inventory.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
