@@ -31,11 +31,11 @@ public class InventoryEvent extends BaseEntity {
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "sku_id")
-    private Sku skus;
+    private Sku sku;
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "location_id")
-    private Location locations;
+    private Location location;
 
     @Enumerated(EnumType.STRING)
     private InventoryEventType type;
