@@ -27,4 +27,12 @@ public class Sku extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private SkuType type;
+
+    public static Sku create(String code, String name, SkuType type) {
+        Sku sku = new Sku();
+        sku.code = code;
+        sku.name = name;
+        sku.type = type;
+        return sku;
+    }
 }
