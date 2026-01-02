@@ -38,6 +38,16 @@ public class Inventory extends BaseEntity {
     private int quantity = 0; // location 위치에 물리적으로 존재하는 총 수량
     private int reservedQty = 0; // 픽킹 등으로 예약된 수량 (실제 가용 수량 = quantity - reserved)
 
-    //todo:: optimistic lock
+    // todo:: optimistic lock
     private int version = 0;
+
+    public static Inventory create(Sku sku, Location location, int quantity) {
+        Inventory inventory = new Inventory();
+        inventory.sku = sku;
+        inventory.location = location;
+        inventory.quantity = quantity;
+        inventory.reservedQty = 0;
+        inventory.version = 0;
+        return inventory;
+    }
 }

@@ -1,4 +1,4 @@
-package com.me.warepulse.inventory;
+package com.me.warepulse.inventory.repository;
 
 import com.me.warepulse.inventory.entity.Inventory;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -28,4 +28,6 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
                 where i.sku.id = :skuId and i.location.id = :locationId
             """)
     int availableQty(Long skuId, Long locationId);
+
+    boolean existsBySkuIdAndLocationId(Long skuId, Long locationId);
 }
