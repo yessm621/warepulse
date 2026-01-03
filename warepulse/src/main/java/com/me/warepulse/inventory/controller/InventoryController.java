@@ -9,6 +9,7 @@ import com.me.warepulse.inventory.service.InventoryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,20 +20,20 @@ public class InventoryController {
 
     private final InventoryService inventoryService;
 
-    @GetMapping("/inventories/sku/{skuId}/location/{locationId}")
+    @GetMapping("/inventories/skus/{skuId}/locations/{locationId}")
     public ResponseEntity<ApiResponse<InventoryResponse>> getInventory(@PathVariable("skuId") Long skuId,
                                                                        @PathVariable("locationId") Long locationId) {
         InventoryResponse inventory = inventoryService.getInventory(skuId, locationId);
         return ResponseEntity.ok(ApiResponse.success(inventory));
     }
 
-    @GetMapping("/inventories/sku/{skuId}")
+    @GetMapping("/inventories/skus/{skuId}")
     public ResponseEntity<ApiResponse<SkuInventoryResponse>> getInventoriesBySku(@PathVariable("skuId") Long skuId) {
         SkuInventoryResponse inventories = inventoryService.getInventoriesBySku(skuId);
         return ResponseEntity.ok(ApiResponse.success(inventories));
     }
 
-    @GetMapping("/inventories/location/{locationId}")
+    @GetMapping("/inventories/locations/{locationId}")
     public ResponseEntity<ApiResponse<List<InventoryResponse>>> getInventoriesByInventory(@PathVariable("locationId") Long locationId) {
         List<InventoryResponse> inventories = inventoryService.getInventoriesByLocation(locationId);
         return ResponseEntity.ok(ApiResponse.success(inventories));
@@ -45,6 +46,7 @@ public class InventoryController {
         return ResponseEntity.ok(ApiResponse.success(inventory));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/inventories")
     public ResponseEntity<ApiResponse<InventoryResponse>> createInventory(@Valid @RequestBody InventoryRequest request) {
         InventoryResponse inventory = inventoryService.createInventory(request);

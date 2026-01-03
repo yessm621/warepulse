@@ -27,7 +27,7 @@ public enum ErrorCode {
     NEGATIVE_INVENTORY_NOT_ALLOWED(HttpStatus.CONFLICT, "I004", "재고는 음수가 될 수 없습니다."),
     INVENTORY_CONCURRENT_MODIFICATION(HttpStatus.CONFLICT, "I005", "재고가 동시에 수정되었습니다."),
     INVALID_INVENTORY_TYPE(HttpStatus.BAD_REQUEST, "I006", "유효하지 않은 재고 타입입니다."),
-    DUPLICATE_INVENTORY(HttpStatus.NOT_FOUND, "I007", "이미 존재하는 재고입니다."),
+    DUPLICATE_INVENTORY(HttpStatus.CONFLICT, "I007", "이미 존재하는 재고입니다."),
     /* 입고 관련 */
     RECEIVING_NOT_FOUND(HttpStatus.NOT_FOUND, "R001", "입고 요청을 찾을 수 없습니다."),
     INVALID_RECEIVING_STATUS(HttpStatus.CONFLICT, "R002", "입고 상태가 올바르지 않습니다."),
