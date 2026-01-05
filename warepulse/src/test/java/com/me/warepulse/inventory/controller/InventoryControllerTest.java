@@ -1,10 +1,7 @@
 package com.me.warepulse.inventory.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.me.warepulse.exception.ErrorCode;
-import com.me.warepulse.exception.WarePulseException;
 import com.me.warepulse.inventory.dto.InventoryAvailableResponse;
-import com.me.warepulse.inventory.dto.InventoryRequest;
 import com.me.warepulse.inventory.dto.InventoryResponse;
 import com.me.warepulse.inventory.dto.SkuInventoryResponse;
 import com.me.warepulse.inventory.service.InventoryService;
@@ -14,7 +11,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -23,10 +19,7 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.then;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
