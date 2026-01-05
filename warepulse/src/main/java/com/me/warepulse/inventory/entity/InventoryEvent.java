@@ -1,15 +1,14 @@
 package com.me.warepulse.inventory.entity;
 
-import com.me.warepulse.location.Location;
-import com.me.warepulse.sku.Sku;
 import com.me.warepulse.utils.BaseEntity;
+import com.me.warepulse.utils.PayloadJsonMapConverter;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
+
+import java.util.Map;
 
 import static jakarta.persistence.FetchType.LAZY;
 
@@ -29,13 +28,9 @@ public class InventoryEvent extends BaseEntity {
     @JoinColumn(name = "inventory_id")
     private Inventory inventories;
 
-    @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "sku_id")
-    private Sku sku;
-
-    @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "location_id")
-    private Location location;
+    // event 기록용 skuId, locationId
+    private Long skuId;
+    private Long locationId;
 
     @Enumerated(EnumType.STRING)
     private InventoryEventType type;
@@ -43,7 +38,20 @@ public class InventoryEvent extends BaseEntity {
     private int quantity;
 
     // todo:: payload, json 타입
-    @JdbcTypeCode(SqlTypes.JSON)
-    @Column(columnDefinition = "clob")
-    private String payload;
+    //@JdbcTypeCode(SqlTypes.JSON)
+    //@Type(JsonType.class)
+    @Convert(converter = PayloadJsonMapConverter.class)
+    @Column(columnDefinition = "json")
+    private Map<String, Object> payload;
+
+    public static InventoryEvent create(Inventory inventory, Long skuId, Long locationId, InventoryEventType type, int quantity, Map<String, Object> payload) {
+        InventoryEvent inventoryEvent = new InventoryEvent();
+        inventoryEvent.inventories = inventory;
+        inventoryEvent.skuId = skuId;
+        inventoryEvent.locationId = locationId;
+        inventoryEvent.type = type;
+        inventoryEvent.quantity = quantity;
+        inventoryEvent.payload = payload;
+        return inventoryEvent;
+    }
 }

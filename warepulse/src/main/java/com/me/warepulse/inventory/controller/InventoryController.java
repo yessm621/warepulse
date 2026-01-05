@@ -2,15 +2,14 @@ package com.me.warepulse.inventory.controller;
 
 import com.me.warepulse.exception.ApiResponse;
 import com.me.warepulse.inventory.dto.InventoryAvailableResponse;
-import com.me.warepulse.inventory.dto.InventoryRequest;
 import com.me.warepulse.inventory.dto.InventoryResponse;
 import com.me.warepulse.inventory.dto.SkuInventoryResponse;
 import com.me.warepulse.inventory.service.InventoryService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -43,13 +42,6 @@ public class InventoryController {
     public ResponseEntity<ApiResponse<InventoryAvailableResponse>> getAvailableInventory(@PathVariable("skuId") Long skuId,
                                                                                          @PathVariable("locationId") Long locationId) {
         InventoryAvailableResponse inventory = inventoryService.inventoryAvailable(skuId, locationId);
-        return ResponseEntity.ok(ApiResponse.success(inventory));
-    }
-
-    @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping("/inventories")
-    public ResponseEntity<ApiResponse<InventoryResponse>> createInventory(@Valid @RequestBody InventoryRequest request) {
-        InventoryResponse inventory = inventoryService.createInventory(request);
         return ResponseEntity.ok(ApiResponse.success(inventory));
     }
 }

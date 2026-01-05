@@ -1,5 +1,7 @@
 package com.me.warepulse.inventory.entity;
 
+import com.me.warepulse.exception.ErrorCode;
+import com.me.warepulse.exception.WarePulseException;
 import com.me.warepulse.location.Location;
 import com.me.warepulse.sku.Sku;
 import com.me.warepulse.utils.BaseEntity;
@@ -38,9 +40,10 @@ public class Inventory extends BaseEntity {
     private int quantity = 0; // location 위치에 물리적으로 존재하는 총 수량
     private int reservedQty = 0; // 픽킹 등으로 예약된 수량 (실제 가용 수량 = quantity - reserved)
 
-    // todo:: optimistic lock
-    private int version = 0;
+    @Version
+    private int version = 0; // todo:: 낙관적 락, optimistic lock
 
+    // todo:: quantity에 대한 검증
     public static Inventory create(Sku sku, Location location, int quantity) {
         Inventory inventory = new Inventory();
         inventory.sku = sku;
@@ -49,5 +52,21 @@ public class Inventory extends BaseEntity {
         inventory.reservedQty = 0;
         inventory.version = 0;
         return inventory;
+    }
+
+    public void increase(int qty) {
+        validateQty(qty);
+        this.quantity += qty;
+    }
+
+    public void decrease(int qty) {
+        validateQty(qty);
+        this.quantity -= qty;
+    }
+
+    private static void validateQty(int qty) {
+        if (qty <= 0) {
+            throw new WarePulseException(ErrorCode.INVALID_QUANTITY);
+        }
     }
 }
