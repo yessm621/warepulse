@@ -1,9 +1,9 @@
 package com.me.warepulse.inventory.controller;
 
 import com.me.warepulse.exception.ApiResponse;
-import com.me.warepulse.inventory.dto.InventoryAvailableResponse;
-import com.me.warepulse.inventory.dto.InventoryResponse;
-import com.me.warepulse.inventory.dto.SkuInventoryResponse;
+import com.me.warepulse.inventory.controller.dto.InventoryAvailableResponse;
+import com.me.warepulse.inventory.controller.dto.InventoryResponse;
+import com.me.warepulse.inventory.controller.dto.SkuInventoryResponse;
 import com.me.warepulse.inventory.service.InventoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

@@ -1,4 +1,4 @@
-package com.me.warepulse.inventory.dto;
+package com.me.warepulse.inventory.controller.dto;
 
 import com.me.warepulse.inventory.entity.Inventory;
 import lombok.AllArgsConstructor;

@@ -1,9 +1,9 @@
 package com.me.warepulse.inventory.service;
 
-import com.me.warepulse.inventory.dto.InventoryAvailableResponse;
-import com.me.warepulse.inventory.dto.InventoryRequest;
-import com.me.warepulse.inventory.dto.InventoryResponse;
-import com.me.warepulse.inventory.dto.SkuInventoryResponse;
+import com.me.warepulse.inventory.controller.dto.InventoryAvailableResponse;
+import com.me.warepulse.inventory.controller.dto.InventoryRequest;
+import com.me.warepulse.inventory.controller.dto.InventoryResponse;
+import com.me.warepulse.inventory.controller.dto.SkuInventoryResponse;
 
 import java.util.List;
 

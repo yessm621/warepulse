@@ -1,4 +1,4 @@
-package com.me.warepulse.inventory.dto;
+package com.me.warepulse.inventory.controller.dto;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;

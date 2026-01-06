@@ -2,10 +2,10 @@ package com.me.warepulse.inventory.service;
 
 import com.me.warepulse.exception.ErrorCode;
 import com.me.warepulse.exception.WarePulseException;
-import com.me.warepulse.inventory.dto.InventoryAvailableResponse;
-import com.me.warepulse.inventory.dto.InventoryRequest;
-import com.me.warepulse.inventory.dto.InventoryResponse;
-import com.me.warepulse.inventory.dto.SkuInventoryResponse;
+import com.me.warepulse.inventory.controller.dto.InventoryAvailableResponse;
+import com.me.warepulse.inventory.controller.dto.InventoryRequest;
+import com.me.warepulse.inventory.controller.dto.InventoryResponse;
+import com.me.warepulse.inventory.controller.dto.SkuInventoryResponse;
 import com.me.warepulse.inventory.entity.Inventory;
 import com.me.warepulse.inventory.repository.InventoryRepository;
 import com.me.warepulse.location.Location;
