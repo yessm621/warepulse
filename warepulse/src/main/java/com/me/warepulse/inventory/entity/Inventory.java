@@ -39,7 +39,7 @@ public class Inventory extends BaseEntity {
     private int reservedQty = 0; // 픽킹 등으로 예약된 수량 (실제 가용 수량 = quantity - reserved)
 
     @Version
-    private int version = 0; // todo:: 낙관적 락, optimistic lock
+    private int version = 0;
 
     // todo:: quantity에 대한 검증
     public static Inventory create(Sku sku, Location location, int quantity) {
@@ -55,11 +55,24 @@ public class Inventory extends BaseEntity {
     public void increase(int qty) {
         validateQty(qty);
         this.quantity += qty;
+        this.reservedQty = 0;
     }
 
     public void decrease(int qty) {
         validateQty(qty);
         this.quantity -= qty;
+        this.reservedQty = 0;
+    }
+
+    public void reserve(int reservedQty) {
+        validateQty(reservedQty);
+        this.reservedQty = reservedQty;
+    }
+
+    public void release(int reservedQty) {
+        validateQty(reservedQty);
+        this.quantity += reservedQty;
+        this.reservedQty = 0;
     }
 
     private static void validateQty(int qty) {

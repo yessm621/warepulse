@@ -2,12 +2,15 @@ package com.me.warepulse.inventory.service;
 
 import com.me.warepulse.exception.ErrorCode;
 import com.me.warepulse.exception.WarePulseException;
-import com.me.warepulse.inventory.dto.IncreaseInventoryDto;
 import com.me.warepulse.inventory.entity.Inventory;
 import com.me.warepulse.inventory.entity.InventoryEvent;
 import com.me.warepulse.inventory.entity.InventoryEventType;
 import com.me.warepulse.inventory.repository.InventoryEventRepository;
 import com.me.warepulse.inventory.repository.InventoryRepository;
+import com.me.warepulse.inventory.service.dto.DecreaseInventoryDto;
+import com.me.warepulse.inventory.service.dto.IncreaseInventoryDto;
+import com.me.warepulse.inventory.service.dto.ReleaseInventoryDto;
+import com.me.warepulse.inventory.service.dto.ReserveInventoryDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,6 +37,7 @@ public class InventoryEventServiceImpl implements InventoryEventService {
         payload.put("sku_id", inventory.getSku().getId());
         payload.put("location_id", inventory.getLocation().getId());
         payload.put("quantity", request.getQuantity());
+        payload.put("reason", request.getReason());
 
         InventoryEvent inventoryEvent = InventoryEvent.create(
                 inventory,
@@ -41,6 +45,78 @@ public class InventoryEventServiceImpl implements InventoryEventService {
                 inventory.getLocation().getId(),
                 InventoryEventType.INCREASE,
                 request.getQuantity(),
+                payload
+        );
+        inventoryEventRepository.save(inventoryEvent);
+    }
+
+    @Override
+    public void shipment(DecreaseInventoryDto request) {
+        Inventory inventory = inventoryRepository.findById(request.getInventoryId())
+                .orElseThrow(() -> new WarePulseException(ErrorCode.INVENTORY_NOT_FOUND));
+
+        inventory.decrease(request.getQuantity());
+
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("sku_id", inventory.getSku().getId());
+        payload.put("location_id", inventory.getLocation().getId());
+        payload.put("quantity", request.getQuantity());
+        payload.put("reason", request.getReason());
+
+        InventoryEvent inventoryEvent = InventoryEvent.create(
+                inventory,
+                inventory.getSku().getId(),
+                inventory.getLocation().getId(),
+                InventoryEventType.DECREASE,
+                request.getQuantity(),
+                payload
+        );
+        inventoryEventRepository.save(inventoryEvent);
+    }
+
+    @Override
+    public void reserve(ReserveInventoryDto request) {
+        Inventory inventory = inventoryRepository.findById(request.getInventoryId())
+                .orElseThrow(() -> new WarePulseException(ErrorCode.INVENTORY_NOT_FOUND));
+
+        inventory.reserve(request.getReservedQty());
+
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("sku_id", inventory.getSku().getId());
+        payload.put("location_id", inventory.getLocation().getId());
+        payload.put("quantity", request.getReservedQty());
+        payload.put("reason", request.getReason());
+
+        InventoryEvent inventoryEvent = InventoryEvent.create(
+                inventory,
+                inventory.getSku().getId(),
+                inventory.getLocation().getId(),
+                InventoryEventType.RESERVE,
+                request.getReservedQty(),
+                payload
+        );
+        inventoryEventRepository.save(inventoryEvent);
+    }
+
+    @Override
+    public void release(ReleaseInventoryDto request) {
+        Inventory inventory = inventoryRepository.findById(request.getInventoryId())
+                .orElseThrow(() -> new WarePulseException(ErrorCode.INVENTORY_NOT_FOUND));
+
+        inventory.release(request.getReservedQty());
+
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("sku_id", inventory.getSku().getId());
+        payload.put("location_id", inventory.getLocation().getId());
+        payload.put("quantity", request.getReservedQty());
+        payload.put("reason", request.getReason());
+
+        InventoryEvent inventoryEvent = InventoryEvent.create(
+                inventory,
+                inventory.getSku().getId(),
+                inventory.getLocation().getId(),
+                InventoryEventType.RELEASE,
+                request.getReservedQty(),
                 payload
         );
         inventoryEventRepository.save(inventoryEvent);
