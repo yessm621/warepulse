@@ -3,7 +3,6 @@ package com.me.warepulse.location;
 import com.me.warepulse.exception.ApiResponse;
 import com.me.warepulse.location.dto.LocationRequest;
 import com.me.warepulse.location.dto.LocationResponse;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,7 +17,7 @@ public class LocationController {
     private final LocationService locationService;
 
     @PostMapping("/locations")
-    public ResponseEntity<ApiResponse<LocationResponse>> createLocation(@Valid @RequestBody LocationRequest request) {
+    public ResponseEntity<ApiResponse<LocationResponse>> createLocation(@RequestBody LocationRequest request) {
         LocationResponse response = locationService.createLocation(request);
         return ResponseEntity.ok(ApiResponse.success(response));
     }

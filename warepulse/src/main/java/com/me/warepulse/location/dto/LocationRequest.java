@@ -15,6 +15,7 @@ public class LocationRequest {
 
     private Long warehouseId;
 
+    //todo:: 컨트롤러에서 @RequestBody 앞에 @Valid를 입력해야 하는지 테스트
     @NotBlank
     @Pattern(
             regexp = "^[A-Z]-(0[1-9]|[1-9][0-9])-(0[1-9]|[1-9][0-9])$",
