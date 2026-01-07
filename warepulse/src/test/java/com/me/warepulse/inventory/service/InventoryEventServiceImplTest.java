@@ -102,6 +102,7 @@ class InventoryEventServiceImplTest {
     }
 
     @Test
+    @DisplayName("receive: inventory가 존재하지 않을 경우 예외 발생")
     void receive_fail_inventory_not_found() {
         // given
         IncreaseInventoryDto dto = new IncreaseInventoryDto(
@@ -123,7 +124,7 @@ class InventoryEventServiceImplTest {
     }
 
     @Test
-    @DisplayName("입고할 재고 개수가 1 보다 작은 경우 오류 발생")
+    @DisplayName("receive: 입고 수량이 1 미만이면 예외 발생")
     void receive_fail_invalid_quantity() {
         IncreaseInventoryDto dto = new IncreaseInventoryDto(100L, 200L, IncreaseReason.PURCHASE_INBOUND, 0);
         given(inventoryRepository.findById(100L)).willReturn(Optional.of(inventory));
@@ -193,7 +194,7 @@ class InventoryEventServiceImplTest {
     }
 
     @Test
-    @DisplayName("가용 재고보다 많이 예약하여 오류 발생")
+    @DisplayName("reserve: 가용 재고 초과 시 예외 발생")
     void reserve_insufficient_available_quantity() {
         // given
         inventory = Inventory.builder()
@@ -242,7 +243,7 @@ class InventoryEventServiceImplTest {
     }
 
     @Test
-    @DisplayName("예약이 없는데 예약 해제하여 오류 발생")
+    @DisplayName("release: 예약이 없는데 예약 해제 시 예외 발생")
     void release_without_reservation() {
         // given
         inventory = Inventory.builder()
@@ -253,7 +254,7 @@ class InventoryEventServiceImplTest {
                 .reservedQty(0)
                 .build();
 
-        ReleaseInventoryDto request = new ReleaseInventoryDto(
+        ReleaseInventoryDto dto = new ReleaseInventoryDto(
                 100L,
                 200L,
                 IncreaseReason.RESERVED_CANCEL,
@@ -263,7 +264,7 @@ class InventoryEventServiceImplTest {
         given(inventoryRepository.findById(100L)).willReturn(Optional.of(inventory));
 
         // when & then
-        assertThatThrownBy(() -> sut.release(request))
+        assertThatThrownBy(() -> sut.release(dto))
                 .isInstanceOf(WarePulseException.class)
                 .hasFieldOrPropertyWithValue("errorCode", ErrorCode.NO_RESERVED_QUANTITY);
 
@@ -271,7 +272,7 @@ class InventoryEventServiceImplTest {
     }
 
     @Test
-    @DisplayName("예약 해제할 건 수보다 예약된 재고가 적을 때 오류 발생")
+    @DisplayName("release: 예약 취소할 건 수보다 예약된 재고가 적을 때 예외 발생")
     void release_insufficient_available_reserve_quantity() {
         // given
         inventory = Inventory.builder()
@@ -282,7 +283,7 @@ class InventoryEventServiceImplTest {
                 .reservedQty(1)
                 .build();
 
-        ReleaseInventoryDto request = new ReleaseInventoryDto(
+        ReleaseInventoryDto dto = new ReleaseInventoryDto(
                 100L,
                 200L,
                 IncreaseReason.RESERVED_CANCEL,
@@ -292,7 +293,7 @@ class InventoryEventServiceImplTest {
         given(inventoryRepository.findById(100L)).willReturn(Optional.of(inventory));
 
         // when & then
-        assertThatThrownBy(() -> sut.release(request))
+        assertThatThrownBy(() -> sut.release(dto))
                 .isInstanceOf(WarePulseException.class)
                 .hasFieldOrPropertyWithValue("errorCode", ErrorCode.INSUFFICIENT_RELEASE_QUANTITY);
 
