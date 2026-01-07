@@ -27,39 +27,39 @@ public class InventoryEventServiceImpl implements InventoryEventService {
     private final InventoryRepository inventoryRepository;
 
     @Override
-    public void receive(IncreaseInventoryDto request) {
-        Inventory inventory = getInventory(request.getInventoryId());
+    public void receive(IncreaseInventoryDto dto) {
+        Inventory inventory = getInventory(dto.getInventoryId());
 
-        inventory.increase(request.getQuantity());
+        inventory.increase(dto.getQuantity());
 
-        saveEvent(inventory, InventoryEventType.INCREASE, request.getQuantity(), request.getReason());
+        saveEvent(inventory, InventoryEventType.INCREASE, dto.getQuantity(), dto.getReason());
     }
 
     @Override
-    public void shipment(DecreaseInventoryDto request) {
-        Inventory inventory = getInventory(request.getInventoryId());
+    public void shipment(DecreaseInventoryDto dto) {
+        Inventory inventory = getInventory(dto.getInventoryId());
 
-        inventory.decrease(request.getQuantity());
+        inventory.decrease(dto.getQuantity());
 
-        saveEvent(inventory, InventoryEventType.DECREASE, request.getQuantity(), request.getReason());
+        saveEvent(inventory, InventoryEventType.DECREASE, dto.getQuantity(), dto.getReason());
     }
 
     @Override
-    public void reserve(ReserveInventoryDto request) {
-        Inventory inventory = getInventory(request.getInventoryId());
+    public void reserve(ReserveInventoryDto dto) {
+        Inventory inventory = getInventory(dto.getInventoryId());
 
-        inventory.reserve(request.getReservedQty());
+        inventory.reserve(dto.getReservedQty());
 
-        saveEvent(inventory, InventoryEventType.DECREASE, request.getReservedQty(), request.getReason());
+        saveEvent(inventory, InventoryEventType.RESERVE, dto.getReservedQty(), dto.getReason());
     }
 
     @Override
-    public void release(ReleaseInventoryDto request) {
-        Inventory inventory = getInventory(request.getInventoryId());
+    public void release(ReleaseInventoryDto dto) {
+        Inventory inventory = getInventory(dto.getInventoryId());
 
-        inventory.release(request.getReservedQty());
+        inventory.release(dto.getReservedQty());
 
-        saveEvent(inventory, InventoryEventType.RELEASE, request.getReservedQty(), request.getReason());
+        saveEvent(inventory, InventoryEventType.RELEASE, dto.getReservedQty(), dto.getReason());
     }
 
     private Inventory getInventory(Long inventoryId) {

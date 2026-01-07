@@ -32,6 +32,9 @@ public enum ErrorCode {
     NEGATIVE_INVENTORY_QUANTITY(HttpStatus.CONFLICT, "I008", "재고 수량은 음수일 수 없습니다."),
     INSUFFICIENT_INVENTORY_QUANTITY(HttpStatus.CONFLICT, "I009", "재고 수량이 부족합니다."),
     INSUFFICIENT_AVAILABLE_INVENTORY(HttpStatus.CONFLICT, "I010", "가용 재고가 부족합니다."),
+    NO_RESERVED_QUANTITY(HttpStatus.CONFLICT, "I011", "예약된 재고가 없습니다."),
+    INSUFFICIENT_RELEASE_QUANTITY(HttpStatus.CONFLICT, "I003", "예약 해제할 재고가 부족합니다."),
+    // todo:: 예약, 예약 해제 관련 에러 따로 정리
     /* 입고 관련 */
     RECEIVING_NOT_FOUND(HttpStatus.NOT_FOUND, "R001", "입고 요청을 찾을 수 없습니다."),
     INVALID_RECEIVING_STATUS(HttpStatus.CONFLICT, "R002", "입고 상태가 올바르지 않습니다."),
