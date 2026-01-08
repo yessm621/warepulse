@@ -1,7 +1,8 @@
 package com.me.warepulse.receiving;
 
+import com.me.warepulse.location.Location;
+import com.me.warepulse.sku.Sku;
 import com.me.warepulse.utils.BaseEntity;
-import com.me.warepulse.inventory.entity.Inventory;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -23,13 +24,31 @@ public class Receiving extends BaseEntity {
     private Long id;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "inventory_id")
-    private Inventory inventories;
+    @JoinColumn(name = "sku_id")
+    private Sku sku;
+
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "location_id")
+    private Location location;
+
+    private int expectedQty = 0;
+    private int receivedQty = 0;
 
     @Enumerated(value = EnumType.STRING)
     private ReceivingStatus status;
 
-    // todo:: 검수 담당자, 완료 처리 담당자
-    private Long inspectedBy;
-    private Long completedBy;
+    private Long inventoryId;
+
+    private String inspectedBy; // 검수 담당자
+    private String completedBy; // 완료 처리 담당자
+
+    public static Receiving create(Sku sku, Location location, int expectedQty) {
+        Receiving receiving = new Receiving();
+        receiving.sku = sku;
+        receiving.location = location;
+        receiving.expectedQty = expectedQty;
+        receiving.receivedQty = 0;
+        receiving.status = ReceivingStatus.CREATED;
+        return receiving;
+    }
 }
