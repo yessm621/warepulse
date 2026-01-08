@@ -41,8 +41,8 @@ public class Inventory extends BaseEntity {
     @Version
     private int version = 0;
 
-    // todo:: quantity에 대한 검증
     public static Inventory create(Sku sku, Location location, int quantity) {
+        validateQty(quantity);
         Inventory inventory = new Inventory();
         inventory.sku = sku;
         inventory.location = location;
@@ -69,7 +69,7 @@ public class Inventory extends BaseEntity {
 
         int availableQty = this.quantity - this.reservedQty;
         if (reservedQty > availableQty) {
-            throw new WarePulseException(ErrorCode.INSUFFICIENT_INVENTORY_QUANTITY);
+            throw new WarePulseException(ErrorCode.INSUFFICIENT_RESERVED_QUANTITY);
         }
 
         this.reservedQty += reservedQty;
@@ -78,9 +78,6 @@ public class Inventory extends BaseEntity {
     public void release(int reservedQty) {
         validateQty(reservedQty);
 
-        if (this.reservedQty <= 0) {
-            throw new WarePulseException(ErrorCode.NO_RESERVED_QUANTITY);
-        }
         if (reservedQty > this.reservedQty) {
             throw new WarePulseException(ErrorCode.INSUFFICIENT_RELEASE_QUANTITY);
         }
@@ -90,7 +87,7 @@ public class Inventory extends BaseEntity {
 
     private static void validateQty(int qty) {
         if (qty <= 0) {
-            throw new WarePulseException(ErrorCode.INVALID_QUANTITY);
+            throw new WarePulseException(ErrorCode.NEGATIVE_INVENTORY_QUANTITY);
         }
     }
 }
