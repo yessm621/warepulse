@@ -1,4 +1,4 @@
-package com.me.warepulse.receiving.dto;
+package com.me.warepulse.receive.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ReceivingRequest {
+public class ReceiveRequest {
 
     private Long locationId;
     private Long skuId;

@@ -1,4 +1,4 @@
-package com.me.warepulse.receiving;
+package com.me.warepulse.receive;
 
 import com.me.warepulse.exception.ErrorCode;
 import com.me.warepulse.exception.WarePulseException;
@@ -14,15 +14,15 @@ import lombok.NoArgsConstructor;
 import static jakarta.persistence.FetchType.LAZY;
 
 @Entity
-@Table(name = "receiving")
+@Table(name = "receive")
 @Getter
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Receiving extends BaseEntity {
+public class Receive extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "receiving_id")
+    @Column(name = "receive_id")
     private Long id;
 
     @ManyToOne(fetch = LAZY)
@@ -37,28 +37,28 @@ public class Receiving extends BaseEntity {
     private int receivedQty = 0;
 
     @Enumerated(value = EnumType.STRING)
-    private ReceivingStatus status;
+    private ReceiveStatus status;
 
     private Long inventoryId;
 
     private String inspectedBy; // 검수 담당자
     private String completedBy; // 완료 처리 담당자
 
-    public static Receiving create(Sku sku, Location location, int expectedQty) {
+    public static Receive create(Sku sku, Location location, int expectedQty) {
         validateQty(expectedQty);
-        Receiving receiving = new Receiving();
-        receiving.sku = sku;
-        receiving.location = location;
-        receiving.expectedQty = expectedQty;
-        receiving.receivedQty = 0;
-        receiving.status = ReceivingStatus.CREATED;
-        return receiving;
+        Receive receive = new Receive();
+        receive.sku = sku;
+        receive.location = location;
+        receive.expectedQty = expectedQty;
+        receive.receivedQty = 0;
+        receive.status = ReceiveStatus.CREATED;
+        return receive;
     }
 
     public void inspect(int receivedQty, String username) {
         validateInspect(receivedQty);
         this.receivedQty = receivedQty;
-        this.status = ReceivingStatus.INSPECTED;
+        this.status = ReceiveStatus.INSPECTED;
         this.inspectedBy = username;
     }
 
@@ -73,12 +73,12 @@ public class Receiving extends BaseEntity {
             throw new WarePulseException(ErrorCode.NEGATIVE_INVENTORY_QUANTITY);
         }
         if (receivedQty > this.expectedQty) {
-            throw new WarePulseException(ErrorCode.RECEIVING_QTY_EXCEEDED);
+            throw new WarePulseException(ErrorCode.RECEIVE_QTY_EXCEEDED);
         }
     }
 
     public void complete(String username) {
-        this.status = ReceivingStatus.COMPLETED;
+        this.status = ReceiveStatus.COMPLETED;
         this.completedBy = username;
     }
 }
