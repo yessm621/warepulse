@@ -1,5 +1,7 @@
 package com.me.warepulse.receiving;
 
+import com.me.warepulse.exception.ErrorCode;
+import com.me.warepulse.exception.WarePulseException;
 import com.me.warepulse.location.Location;
 import com.me.warepulse.sku.Sku;
 import com.me.warepulse.utils.BaseEntity;
@@ -43,6 +45,7 @@ public class Receiving extends BaseEntity {
     private String completedBy; // 완료 처리 담당자
 
     public static Receiving create(Sku sku, Location location, int expectedQty) {
+        validateQty(expectedQty);
         Receiving receiving = new Receiving();
         receiving.sku = sku;
         receiving.location = location;
@@ -50,5 +53,32 @@ public class Receiving extends BaseEntity {
         receiving.receivedQty = 0;
         receiving.status = ReceivingStatus.CREATED;
         return receiving;
+    }
+
+    public void inspect(int receivedQty, String username) {
+        validateInspect(receivedQty);
+        this.receivedQty = receivedQty;
+        this.status = ReceivingStatus.INSPECTED;
+        this.inspectedBy = username;
+    }
+
+    private static void validateQty(int qty) {
+        if (qty <= 0) {
+            throw new WarePulseException(ErrorCode.NEGATIVE_INVENTORY_QUANTITY);
+        }
+    }
+
+    private void validateInspect(int receivedQty) {
+        if (receivedQty < 0) {
+            throw new WarePulseException(ErrorCode.NEGATIVE_INVENTORY_QUANTITY);
+        }
+        if (receivedQty > this.expectedQty) {
+            throw new WarePulseException(ErrorCode.RECEIVING_QTY_EXCEEDED);
+        }
+    }
+
+    public void complete(String username) {
+        this.status = ReceivingStatus.COMPLETED;
+        this.completedBy = username;
     }
 }

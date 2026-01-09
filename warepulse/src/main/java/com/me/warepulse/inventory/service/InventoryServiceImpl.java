@@ -3,7 +3,7 @@ package com.me.warepulse.inventory.service;
 import com.me.warepulse.exception.ErrorCode;
 import com.me.warepulse.exception.WarePulseException;
 import com.me.warepulse.inventory.controller.dto.InventoryAvailableResponse;
-import com.me.warepulse.inventory.controller.dto.InventoryRequest;
+import com.me.warepulse.inventory.controller.dto.InventoryDto;
 import com.me.warepulse.inventory.controller.dto.InventoryResponse;
 import com.me.warepulse.inventory.controller.dto.SkuInventoryResponse;
 import com.me.warepulse.inventory.entity.Inventory;
@@ -58,17 +58,18 @@ public class InventoryServiceImpl implements InventoryService {
 
     @Transactional
     @Override
-    public InventoryResponse createInventory(InventoryRequest request) {
-        if (inventoryRepository.existsBySkuIdAndLocationId(request.getSkuId(), request.getLocationId())) {
+    public Long createInventory(InventoryDto dto) {
+        if (inventoryRepository.existsBySkuIdAndLocationId(dto.getSkuId(), dto.getLocationId())) {
             throw new WarePulseException(ErrorCode.DUPLICATE_INVENTORY);
         }
 
-        Sku sku = skuRepository.findById(request.getSkuId())
+        Sku sku = skuRepository.findById(dto.getSkuId())
                 .orElseThrow(() -> new WarePulseException(ErrorCode.SKU_NOT_FOUND));
-        Location location = locationRepository.findById(request.getLocationId())
+        Location location = locationRepository.findById(dto.getLocationId())
                 .orElseThrow(() -> new WarePulseException(ErrorCode.LOCATION_NOT_FOUND));
 
-        Inventory inventory = Inventory.create(sku, location, request.getQuantity());
-        return InventoryResponse.from(inventory);
+        Inventory inventory = Inventory.create(sku, location, dto.getQuantity());
+        inventoryRepository.save(inventory);
+        return inventory.getId();
     }
 }

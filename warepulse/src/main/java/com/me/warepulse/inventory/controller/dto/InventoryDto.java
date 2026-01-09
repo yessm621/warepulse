@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class InventoryRequest {
+public class InventoryDto {
 
     private Long skuId;
     private Long locationId;
@@ -17,4 +17,8 @@ public class InventoryRequest {
     @Max(200)
     @Min(0)
     private int quantity;
+
+    public static InventoryDto of(Long skuId, Long locationId, int quantity) {
+        return new InventoryDto(skuId, locationId, quantity);
+    }
 }

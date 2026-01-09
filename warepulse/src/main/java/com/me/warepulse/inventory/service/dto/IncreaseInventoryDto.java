@@ -17,4 +17,8 @@ public class IncreaseInventoryDto {
 
     @Min(1)
     private int quantity;
+
+    public static IncreaseInventoryDto of(Long inventoryId, Long receivingId, IncreaseReason reason, int quantity) {
+        return new IncreaseInventoryDto(inventoryId, receivingId, reason, quantity);
+    }
 }
