@@ -75,6 +75,10 @@ public class ReceiveServiceImpl implements ReceiveService {
     public ReceiveResponse completedReceive(Long receiveId, String username) {
         Receive receive = receiveRepository.findById(receiveId)
                 .orElseThrow(() -> new WarePulseException(ErrorCode.RECEIVE_NOT_FOUND));
+
+        if (!receive.getStatus().equals(ReceiveStatus.INSPECTED)) {
+            throw new WarePulseException(ErrorCode.RECEIVE_INSPECTION_NOT_COMPLETED);
+        }
         receive.complete(username);
 
         Long inventoryId = getInventory(receive);

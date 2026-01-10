@@ -67,7 +67,7 @@ public class Receive extends BaseEntity {
     }
 
     private void validateInspect(int receivedQty) {
-        if (receivedQty < 0) {
+        if (receivedQty <= 0) {
             throw new WarePulseException(ErrorCode.NEGATIVE_INVENTORY_QUANTITY);
         }
         if (receivedQty > this.expectedQty) {
@@ -78,5 +78,10 @@ public class Receive extends BaseEntity {
     public void complete(String username) {
         this.status = ReceiveStatus.COMPLETED;
         this.completedBy = username;
+    }
+
+    // 테스트 코드에서 사용
+    public void changeStatus(ReceiveStatus status) {
+        this.status = status;
     }
 }

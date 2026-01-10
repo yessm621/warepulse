@@ -2,12 +2,14 @@ package com.me.warepulse.receive;
 
 import com.me.warepulse.exception.ErrorCode;
 import com.me.warepulse.exception.WarePulseException;
+import com.me.warepulse.inventory.controller.dto.InventoryDto;
 import com.me.warepulse.inventory.entity.Inventory;
 import com.me.warepulse.inventory.entity.InventoryEvent;
 import com.me.warepulse.inventory.entity.InventoryEventType;
 import com.me.warepulse.inventory.repository.InventoryRepository;
 import com.me.warepulse.inventory.service.InventoryEventService;
 import com.me.warepulse.inventory.service.InventoryService;
+import com.me.warepulse.inventory.service.dto.IncreaseInventoryDto;
 import com.me.warepulse.location.Location;
 import com.me.warepulse.location.LocationRepository;
 import com.me.warepulse.receive.dto.ReceiveRequest;
@@ -88,6 +90,7 @@ class ReceiveServiceImplTest {
                 .status(ReceiveStatus.CREATED)
                 .expectedQty(10)
                 .receivedQty(10)
+                .inspectedBy("inspector")
                 .build();
     }
 
@@ -215,53 +218,159 @@ class ReceiveServiceImplTest {
     @Test
     void inspectedReceive_success() {
         // given
+        Long receiveId = 1L;
+        String username = "inspector";
+        int receivedQty = 10;
+        given(receiveRepository.findById(receiveId)).willReturn(Optional.of(receive));
 
         // when
-
+        ReceiveResponse result = sut.inspectedReceive(receiveId, username, receivedQty);
 
         // then
+        assertThat(result).isNotNull();
+        assertThat(result.getReceiveId()).isEqualTo(receive.getId());
+        assertThat(receive.getReceivedQty()).isEqualTo(receivedQty);
+        assertThat(receive.getInspectedBy()).isEqualTo(username);
+        assertThat(receive.getStatus()).isEqualTo(ReceiveStatus.INSPECTED);
+
+        then(receiveRepository).should().findById(receiveId);
+        then(receiveRepository).shouldHaveNoMoreInteractions();
     }
 
 
     @Test
-    void inspectedReceive_fail() {
+    void inspectedReceive_fail_receive_not_found() {
         // given
+        Long receiveId = 1L;
+        String username = "inspector";
+        int receivedQty = 10;
+        given(receiveRepository.findById(receiveId)).willReturn(Optional.empty());
 
         // when & then
-
+        assertThatThrownBy(() -> sut.inspectedReceive(receiveId, username, receivedQty))
+                .isInstanceOf(WarePulseException.class)
+                .hasFieldOrPropertyWithValue("errorCode", ErrorCode.RECEIVE_NOT_FOUND);
     }
 
     @Test
-    void inspectedReceive_fail_() {
+    void inspectedReceive_fail_negative_receivedQty() {
         // given
+        Long receiveId = 1L;
+        String username = "inspector";
+        int receivedQty = 0;
+        given(receiveRepository.findById(receiveId)).willReturn(Optional.of(receive));
 
         // when & then
-
+        assertThatThrownBy(() -> sut.inspectedReceive(receiveId, username, receivedQty))
+                .isInstanceOf(WarePulseException.class)
+                .hasFieldOrPropertyWithValue("errorCode", ErrorCode.NEGATIVE_INVENTORY_QUANTITY);
     }
 
     @Test
-    void completedReceive() {
+    void inspectedReceive_fail_receivedQty_exceeded() {
         // given
+        Long receiveId = 1L;
+        String username = "inspector";
+        int receivedQty = 100;
+        given(receiveRepository.findById(receiveId)).willReturn(Optional.of(receive));
+
+        // when & then
+        assertThatThrownBy(() -> sut.inspectedReceive(receiveId, username, receivedQty))
+                .isInstanceOf(WarePulseException.class)
+                .hasFieldOrPropertyWithValue("errorCode", ErrorCode.RECEIVE_QTY_EXCEEDED);
+    }
+
+    @Test
+    void completedReceive_success_exist_inventory() {
+        // given
+        Long receiveId = 1L;
+        String username = "completer";
+        receive.changeStatus(ReceiveStatus.INSPECTED);
+        given(receiveRepository.findById(receiveId)).willReturn(Optional.of(receive));
+        given(inventoryRepository.findBySkuIdAndLocationId(receive.getSku().getId(), receive.getLocation().getId()))
+                .willReturn(Optional.of(inventory));
 
         // when
-
+        ReceiveResponse result = sut.completedReceive(receiveId, username);
 
         // then
+        assertThat(result).isNotNull();
+        assertThat(result.getReceiveId()).isEqualTo(receive.getId());
+        assertThat(receive.getStatus()).isEqualTo(ReceiveStatus.COMPLETED);
+        assertThat(receive.getCompletedBy()).isEqualTo(username);
+
+        then(receiveRepository).should().findById(receiveId);
+        then(inventoryRepository).should()
+                .findBySkuIdAndLocationId(receive.getSku().getId(), receive.getLocation().getId());
+
+        then(inventoryService).should(never()).createInventory(any());
+        then(inventoryEventService).should().receive(any(IncreaseInventoryDto.class));
     }
 
     @Test
-    void completedReceive_fail() {
+    void completedReceive_success_not_exist_inventory() {
         // given
+        Long receiveId = 1L;
+        String username = "completer";
+        receive.changeStatus(ReceiveStatus.INSPECTED);
+        given(receiveRepository.findById(receiveId)).willReturn(Optional.of(receive));
+        given(inventoryRepository.findBySkuIdAndLocationId(receive.getSku().getId(), receive.getLocation().getId()))
+                .willReturn(Optional.empty());
+        given(inventoryService.createInventory(any(InventoryDto.class))).willReturn(anyLong());
 
-        // when & then
+        // when
+        ReceiveResponse result = sut.completedReceive(receiveId, username);
 
+        // then
+        assertThat(result).isNotNull();
+        assertThat(receive.getStatus()).isEqualTo(ReceiveStatus.COMPLETED);
+
+        then(inventoryService).should().createInventory(any(InventoryDto.class));
+        then(inventoryEventService).should().receive(any(IncreaseInventoryDto.class));
     }
 
     @Test
-    void completedReceive_fail_() {
+    void completedReceive_fail_receive_not_found() {
         // given
+        Long receiveId = 1L;
+        String username = "completer";
+        given(receiveRepository.findById(receiveId)).willReturn(Optional.empty());
 
         // when & then
+        assertThatThrownBy(() -> sut.completedReceive(receiveId, username))
+                .isInstanceOf(WarePulseException.class)
+                .hasFieldOrPropertyWithValue("errorCode", ErrorCode.RECEIVE_NOT_FOUND);
+    }
 
+    @Test
+    void completedReceive_fail_receive_inspection_not_completed() {
+        // given
+        Long receiveId = 1L;
+        String username = "completer";
+        given(receiveRepository.findById(receiveId)).willReturn(Optional.of(receive));
+
+        // when & then
+        assertThatThrownBy(() -> sut.completedReceive(receiveId, username))
+                .isInstanceOf(WarePulseException.class)
+                .hasFieldOrPropertyWithValue("errorCode", ErrorCode.RECEIVE_INSPECTION_NOT_COMPLETED);
+    }
+
+    @Test
+    void completedReceive_fail_receive_inventory() {
+        // given
+        Long receiveId = 1L;
+        String username = "completer";
+        receive.changeStatus(ReceiveStatus.INSPECTED);
+        
+        given(receiveRepository.findById(receiveId)).willReturn(Optional.of(receive));
+        given(inventoryRepository.findBySkuIdAndLocationId(receive.getSku().getId(), receive.getLocation().getId()))
+                .willReturn(Optional.empty());
+        given(inventoryService.createInventory(any(InventoryDto.class)))
+                .willThrow(new WarePulseException(ErrorCode.DUPLICATE_INVENTORY));
+
+        // when & then
+        assertThatThrownBy(() -> sut.completedReceive(receiveId, username))
+                .isInstanceOf(WarePulseException.class)
+                .hasFieldOrPropertyWithValue("errorCode", ErrorCode.DUPLICATE_INVENTORY);
     }
 }

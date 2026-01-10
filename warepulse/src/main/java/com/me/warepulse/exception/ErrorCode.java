@@ -47,7 +47,7 @@ public enum ErrorCode {
     RECEIVE_QTY_EXCEEDED(HttpStatus.CONFLICT, "R004", "입고 수량이 예상 수량을 초과하여 처리할 수 없습니다."),
     RECEIVE_INSPECTED_PERMISSION_DENIED(HttpStatus.FORBIDDEN, "R005", "입고 검수 처리 권한이 없습니다."),
     RECEIVE_COMPLETED_PERMISSION_DENIED(HttpStatus.FORBIDDEN, "R006", "입고 완료 처리 권한이 없습니다."),
-    RECEIVE_INSPECTION_NOT_COMPLETED(HttpStatus.CONFLICT, "R007", "검수가 완료되지 않은 입고는 완료 처리할 수 없습니다."),
+    RECEIVE_INSPECTION_NOT_COMPLETED(HttpStatus.CONFLICT, "R007", "검수가 되지 않은 입고는 완료 처리할 수 없습니다."),
 
     /* 출고 관련 */
     SHIPMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "SH001", "출고 정보를 찾을 수 없습니다."),
