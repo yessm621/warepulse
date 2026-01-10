@@ -7,42 +7,48 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode {
 
     /* 사용자 관련 */
-    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "U001", "사용자를 찾을 수 없습니다."),
-    DUPLICATE_USER_NAME(HttpStatus.CONFLICT, "U002", "이미 존재하는 사용자 아이디입니다."),
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "U001", "사용자 정보를 찾을 수 없습니다."),
+    DUPLICATE_USERNAME(HttpStatus.CONFLICT, "U002", "이미 사용 중인 사용자 아이디입니다."),
     INVALID_USER_ROLE(HttpStatus.FORBIDDEN, "U003", "해당 작업을 수행할 권한이 없습니다."),
-    INVALID_CREDENTIALS(HttpStatus.CONFLICT, "U004", "사용자 아이디 또는 비밀번호가 일치하지 않습니다."),
+    INVALID_CREDENTIALS(HttpStatus.UNAUTHORIZED, "U004", "아이디 또는 비밀번호가 일치하지 않습니다."),
+
     /* 창고, 로케이션 관련 */
-    WAREHOUSE_NOT_FOUND(HttpStatus.NOT_FOUND, "W001", "창고를 찾을 수 없습니다."),
-    LOCATION_NOT_FOUND(HttpStatus.NOT_FOUND, "L001", "로케이션을 찾을 수 없습니다."),
-    LOCATION_CAPACITY_EXCEEDED(HttpStatus.CONFLICT, "L002", "로케이션에 수용할 수 있는 물건 수를 초과했습니다."),
-    INVALID_LOCATION(HttpStatus.BAD_REQUEST, "L003", "유효하지 않은 로케이션입니다."),
+    WAREHOUSE_NOT_FOUND(HttpStatus.NOT_FOUND, "W001", "창고 정보를 찾을 수 없습니다."),
+    LOCATION_NOT_FOUND(HttpStatus.NOT_FOUND, "L001", "로케이션 정보를 찾을 수 없습니다."),
+    LOCATION_CAPACITY_EXCEEDED(HttpStatus.CONFLICT, "L002", "로케이션의 최대 수용 용량을 초과했습니다."),
+
     /* SKU 관련 */
-    SKU_NOT_FOUND(HttpStatus.NOT_FOUND, "S001", "SKU를 찾을 수 없습니다."),
+    SKU_NOT_FOUND(HttpStatus.NOT_FOUND, "S001", "SKU 정보를 찾을 수 없습니다."),
     DUPLICATE_SKU_CODE(HttpStatus.CONFLICT, "S002", "이미 존재하는 SKU 코드입니다."),
-    INVALID_SKU_TYPE(HttpStatus.BAD_REQUEST, "S003", "유효하지 않은 SKU 타입입니다."),
+
     /* 재고 관련 */
-    INVENTORY_NOT_FOUND(HttpStatus.NOT_FOUND, "I001", "재고가 존재하지 않습니다."),
-    INSUFFICIENT_STOCK(HttpStatus.CONFLICT, "I002", "가용 재고가 부족합니다."),
-    INSUFFICIENT_RESERVED_STOCK(HttpStatus.CONFLICT, "I003", "예약된 재고가 부족합니다."),
-    NEGATIVE_INVENTORY_NOT_ALLOWED(HttpStatus.CONFLICT, "I004", "재고는 음수가 될 수 없습니다."),
-    INVENTORY_CONCURRENT_MODIFICATION(HttpStatus.CONFLICT, "I005", "재고가 동시에 수정되었습니다."),
-    INVALID_INVENTORY_TYPE(HttpStatus.BAD_REQUEST, "I006", "유효하지 않은 재고 타입입니다."),
-    DUPLICATE_INVENTORY(HttpStatus.CONFLICT, "I007", "이미 존재하는 재고입니다."),
-    INVALID_QUANTITY(HttpStatus.CONFLICT, "I008", "잘못된 재고 수량입니다."),
-    NEGATIVE_INVENTORY_QUANTITY(HttpStatus.CONFLICT, "I008", "재고 수량은 음수일 수 없습니다."),
-    INSUFFICIENT_INVENTORY_QUANTITY(HttpStatus.CONFLICT, "I009", "재고 수량이 부족합니다."),
-    INSUFFICIENT_AVAILABLE_INVENTORY(HttpStatus.CONFLICT, "I010", "가용 재고가 부족합니다."),
-    NO_RESERVED_QUANTITY(HttpStatus.CONFLICT, "I011", "예약된 재고가 없습니다."),
-    INSUFFICIENT_RELEASE_QUANTITY(HttpStatus.CONFLICT, "I003", "예약 해제할 재고가 부족합니다."),
-    // todo:: 예약, 예약 해제 관련 에러 따로 정리
+    INVENTORY_NOT_FOUND(HttpStatus.NOT_FOUND, "I001", "재고 정보를 찾을 수 없습니다."),
+    INVENTORY_CONCURRENT_MODIFICATION(HttpStatus.CONFLICT, "I002", "재고가 다른 요청에 의해 변경되었습니다. 다시 시도해주세요."),
+    DUPLICATE_INVENTORY(HttpStatus.CONFLICT, "I003", "해당 SKU와 Location에 대한 재고가 이미 존재합니다."),
+    DUPLICATE_INVENTORY_REQUEST(HttpStatus.CONFLICT, "I011", "이미 처리된 재고 요청입니다."),
+
+    /* 재고 수량 관련 */
+    INVALID_QUANTITY(HttpStatus.BAD_REQUEST, "I004", "요청한 재고 수량이 유효하지 않습니다."),
+    NEGATIVE_INVENTORY_QUANTITY(HttpStatus.BAD_REQUEST, "I005", "재고 수량은 0 이상이어야 합니다."),
+    INSUFFICIENT_INVENTORY_QUANTITY(HttpStatus.CONFLICT, "I006", "재고 수량이 부족하여 요청을 처리할 수 없습니다."),
+    INSUFFICIENT_INVENTORY_AVAILABLE(HttpStatus.CONFLICT, "I007", "가용 재고가 부족하여 요청을 처리할 수 없습니다."),
+
+    /* 예약 관련 */
+    RESERVED_INVENTORY_NOT_FOUND(HttpStatus.CONFLICT, "I008", "예약된 재고가 존재하지 않습니다."),
+    INSUFFICIENT_RESERVED_QUANTITY(HttpStatus.CONFLICT, "I009", "예약된 재고 수량이 부족합니다."),
+
+    /* 예약 해제 관련 */
+    INSUFFICIENT_RELEASE_QUANTITY(HttpStatus.CONFLICT, "I010", "해제할 예약 재고 수량이 부족합니다."),
+
     /* 입고 관련 */
-    RECEIVING_NOT_FOUND(HttpStatus.NOT_FOUND, "R001", "입고 요청을 찾을 수 없습니다."),
-    INVALID_RECEIVING_STATUS(HttpStatus.CONFLICT, "R002", "입고 상태가 올바르지 않습니다."),
-    RECEIVING_ALREADY_COMPLETED(HttpStatus.CONFLICT, "R003", "이미 완료된 입고입니다."),
-    RECEIVING_QTY_EXCEEDED(HttpStatus.CONFLICT, "R004", "입고 수량이 예상 수량을 초과했습니다."),
-    RECEIVING_INSPECTED_PERMISSION_DENIED(HttpStatus.FORBIDDEN, "R005", "입고 검수 담당자의 권한이 없습니다."),
-    RECEIVING_COMPLETED_PERMISSION_DENIED(HttpStatus.FORBIDDEN, "R006", "완료 처리 담당자의 권한이 없습니다."),
-    RECEIVING_INSPECTION_NOT_COMPLETED(HttpStatus.CONFLICT, "R007", "검수하기 전에 완료 처리를 할 수 없습니다."),
+    RECEIVE_NOT_FOUND(HttpStatus.NOT_FOUND, "R001", "입고 정보를 찾을 수 없습니다."),
+    INVALID_RECEIVE_QUANTITY(HttpStatus.CONFLICT, "R002", "요청한 입고 수량이 유효하지 않습니다."),
+    RECEIVE_ALREADY_COMPLETED(HttpStatus.BAD_REQUEST, "R003", "이미 완료 처리된 입고입니다."),
+    RECEIVE_QTY_EXCEEDED(HttpStatus.CONFLICT, "R004", "입고 수량이 예상 수량을 초과하여 처리할 수 없습니다."),
+    RECEIVE_INSPECTED_PERMISSION_DENIED(HttpStatus.FORBIDDEN, "R005", "입고 검수 처리 권한이 없습니다."),
+    RECEIVE_COMPLETED_PERMISSION_DENIED(HttpStatus.FORBIDDEN, "R006", "입고 완료 처리 권한이 없습니다."),
+    RECEIVE_INSPECTION_NOT_COMPLETED(HttpStatus.CONFLICT, "R007", "검수가 되지 않은 입고는 완료 처리할 수 없습니다."),
+
     /* 출고 관련 */
     SHIPMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "SH001", "출고 정보를 찾을 수 없습니다."),
     INVALID_SHIPMENT_STATUS(HttpStatus.CONFLICT, "SH002", "출고 상태가 올바르지 않습니다."),

@@ -12,9 +12,13 @@ import lombok.NoArgsConstructor;
 public class IncreaseInventoryDto {
 
     private Long inventoryId;
-    private Long receivingId;
+    private Long receiveId;
     private IncreaseReason reason;
 
     @Min(1)
     private int quantity;
+
+    public static IncreaseInventoryDto of(Long inventoryId, Long receiveId, IncreaseReason reason, int quantity) {
+        return new IncreaseInventoryDto(inventoryId, receiveId, reason, quantity);
+    }
 }

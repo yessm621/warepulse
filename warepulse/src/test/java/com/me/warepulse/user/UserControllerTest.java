@@ -64,7 +64,7 @@ class UserControllerTest {
         SignupRequest request = new SignupRequest("username", "password");
 
         given(userService.signup(any(SignupRequest.class)))
-                .willThrow(new WarePulseException(ErrorCode.DUPLICATE_USER_NAME));
+                .willThrow(new WarePulseException(ErrorCode.DUPLICATE_USERNAME));
 
         // when & then
         mockMvc.perform(post("/signup")
@@ -74,7 +74,7 @@ class UserControllerTest {
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.status").value("fail"))
                 .andExpect(jsonPath("$.errorMessage.code").value("U002"))
-                .andExpect(jsonPath("$.errorMessage.message").value(ErrorCode.DUPLICATE_USER_NAME.getMessage()));
+                .andExpect(jsonPath("$.errorMessage.message").value(ErrorCode.DUPLICATE_USERNAME.getMessage()));
     }
 
     @Test

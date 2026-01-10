@@ -132,7 +132,7 @@ class InventoryEventServiceImplTest {
         // when & then
         assertThatThrownBy(() -> sut.receive(dto))
                 .isInstanceOf(WarePulseException.class)
-                .hasFieldOrPropertyWithValue("errorCode", ErrorCode.INVALID_QUANTITY);
+                .hasFieldOrPropertyWithValue("errorCode", ErrorCode.NEGATIVE_INVENTORY_QUANTITY);
 
         verify(inventoryEventRepository, never()).save(any());
     }
@@ -212,7 +212,7 @@ class InventoryEventServiceImplTest {
         // when & then
         assertThatThrownBy(() -> sut.reserve(dto))
                 .isInstanceOf(WarePulseException.class)
-                .hasFieldOrPropertyWithValue("errorCode", ErrorCode.INSUFFICIENT_INVENTORY_QUANTITY);
+                .hasFieldOrPropertyWithValue("errorCode", ErrorCode.INSUFFICIENT_RESERVED_QUANTITY);
 
         verify(inventoryEventRepository, never()).save(any());
     }
@@ -266,7 +266,7 @@ class InventoryEventServiceImplTest {
         // when & then
         assertThatThrownBy(() -> sut.release(dto))
                 .isInstanceOf(WarePulseException.class)
-                .hasFieldOrPropertyWithValue("errorCode", ErrorCode.NO_RESERVED_QUANTITY);
+                .hasFieldOrPropertyWithValue("errorCode", ErrorCode.INSUFFICIENT_RELEASE_QUANTITY);
 
         verify(inventoryEventRepository, never()).save(any());
     }
