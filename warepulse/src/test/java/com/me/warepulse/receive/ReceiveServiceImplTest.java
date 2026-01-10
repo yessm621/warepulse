@@ -52,7 +52,6 @@ class ReceiveServiceImplTest {
 
     private Receive receive;
     private Inventory inventory;
-    private InventoryEvent inventoryEvent;
     private Sku sku;
     private Location location;
 
@@ -72,15 +71,6 @@ class ReceiveServiceImplTest {
                 .location(location)
                 .quantity(100)
                 .reservedQty(10)
-                .build();
-
-        inventoryEvent = InventoryEvent.builder()
-                .id(1L)
-                .inventories(inventory)
-                .skuId(sku.getId())
-                .locationId(location.getId())
-                .type(InventoryEventType.RESERVE)
-                .quantity(10)
                 .build();
 
         receive = Receive.builder()
@@ -361,7 +351,7 @@ class ReceiveServiceImplTest {
         Long receiveId = 1L;
         String username = "completer";
         receive.changeStatus(ReceiveStatus.INSPECTED);
-        
+
         given(receiveRepository.findById(receiveId)).willReturn(Optional.of(receive));
         given(inventoryRepository.findBySkuIdAndLocationId(receive.getSku().getId(), receive.getLocation().getId()))
                 .willReturn(Optional.empty());

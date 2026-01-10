@@ -75,9 +75,10 @@ public class Receive extends BaseEntity {
         }
     }
 
-    public void complete(String username) {
+    public void complete(String username, Long inventoryId) {
         this.status = ReceiveStatus.COMPLETED;
         this.completedBy = username;
+        this.inventoryId = inventoryId;
     }
 
     // 테스트 코드에서 사용

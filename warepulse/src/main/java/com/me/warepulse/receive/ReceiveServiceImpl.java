@@ -79,10 +79,11 @@ public class ReceiveServiceImpl implements ReceiveService {
         if (!receive.getStatus().equals(ReceiveStatus.INSPECTED)) {
             throw new WarePulseException(ErrorCode.RECEIVE_INSPECTION_NOT_COMPLETED);
         }
-        receive.complete(username);
 
         Long inventoryId = getInventory(receive);
         increaseInventoryEvent(inventoryId, receive);
+
+        receive.complete(username, inventoryId);
 
         return ReceiveResponse.from(receive);
     }
