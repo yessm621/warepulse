@@ -47,16 +47,17 @@ public enum ErrorCode {
     RECEIVE_QTY_EXCEEDED(HttpStatus.CONFLICT, "R004", "입고 수량이 예상 수량을 초과하여 처리할 수 없습니다."),
     RECEIVE_INSPECTED_PERMISSION_DENIED(HttpStatus.FORBIDDEN, "R005", "입고 검수 처리 권한이 없습니다."),
     RECEIVE_COMPLETED_PERMISSION_DENIED(HttpStatus.FORBIDDEN, "R006", "입고 완료 처리 권한이 없습니다."),
-    RECEIVE_INSPECTION_NOT_COMPLETED(HttpStatus.CONFLICT, "R007", "검수가 되지 않은 입고는 완료 처리할 수 없습니다."),
+    RECEIVE_INSPECTION_NOT_COMPLETED(HttpStatus.CONFLICT, "R007", "검수가 완료되지 않아 입고 완료 처리를 진행할 수 없습니다."),
 
     /* 출고 관련 */
     SHIPMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "SH001", "출고 정보를 찾을 수 없습니다."),
-    INVALID_SHIPMENT_STATUS(HttpStatus.CONFLICT, "SH002", "출고 상태가 올바르지 않습니다."),
-    SHIPMENT_ALREADY_SHIPPED(HttpStatus.CONFLICT, "SH003", "이미 출고 완료된 상태입니다."),
-    PICKING_QTY_EXCEEDED(HttpStatus.CONFLICT, "SH004", "피킹 수량이 요청 수량을 초과했습니다."),
-    SHIPMENT_INSPECTED_PERMISSION_DENIED(HttpStatus.FORBIDDEN, "SH005", "입고 검수 담당자의 권한이 없습니다."),
-    SHIPMENT_COMPLETED_PERMISSION_DENIED(HttpStatus.FORBIDDEN, "SH006", "완료 처리 담당자의 권한이 없습니다."),
-    SHIPMENT_INSPECTION_NOT_COMPLETED(HttpStatus.CONFLICT, "SH007", "검수하기 전에 완료 처리를 할 수 없습니다."),
+    INVALID_SHIPMENT_QUANTITY(HttpStatus.CONFLICT, "SH002", "요청한 출고 수량이 유효하지 않습니다."),
+    SHIPMENT_ALREADY_SHIPPED(HttpStatus.CONFLICT, "SH003", "이미 출고 처리된 재고입니다."),
+    PICKING_QTY_EXCEEDED(HttpStatus.CONFLICT, "SH004", "피킹 수량이 예상 수량을 초과하여 처리할 수 없습니다."),
+    SHIPMENT_INSPECTED_PERMISSION_DENIED(HttpStatus.FORBIDDEN, "SH005", "출고 검수 처리 권한이 없습니다."),
+    SHIPMENT_COMPLETED_PERMISSION_DENIED(HttpStatus.FORBIDDEN, "SH006", "출고 완료 처리 권한이 없습니다."),
+    SHIPMENT_INSPECTION_NOT_COMPLETED(HttpStatus.CONFLICT, "SH007", "검수가 완료되지 않아 출고 완료 처리를 진행할 수 없습니다."),
+
     /* 조정, 실사 관련 */
     INVALID_ADJUSTMENT(HttpStatus.BAD_REQUEST, "A001", "유효하지 않은 재고 조정입니다."),
     ADJUSTMENT_REASON_REQUIRED(HttpStatus.BAD_REQUEST, "A002", "재고 조정 사유는 필수입니다."),

@@ -1,12 +1,12 @@
 package com.me.warepulse.shipment;
 
+import com.me.warepulse.exception.ErrorCode;
+import com.me.warepulse.exception.WarePulseException;
+import com.me.warepulse.location.Location;
 import com.me.warepulse.utils.BaseEntity;
 import com.me.warepulse.sku.Sku;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import static jakarta.persistence.FetchType.LAZY;
 
@@ -15,6 +15,7 @@ import static jakarta.persistence.FetchType.LAZY;
 @Getter
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
 public class Shipment extends BaseEntity {
 
     @Id
@@ -26,10 +27,61 @@ public class Shipment extends BaseEntity {
     @JoinColumn(name = "sku_id")
     private Sku sku;
 
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "location_id")
+    private Location location;
+
+    private int quantity = 0;
+    private int pickedQty = 0;
+
     @Enumerated(value = EnumType.STRING)
     private ShipmentStatus status;
 
-    // todo:: 검수 담당자, 완료 처리 담당자
-    private Long inspectedBy;
-    private Long completedBy;
+    private Long inventoryId;
+
+    private String pickedBy;
+    private String shippedBy;
+
+    public static Shipment create(Sku sku, Location location, int quantity) {
+        validateQty(quantity);
+        Shipment shipment = new Shipment();
+        shipment.sku = sku;
+        shipment.location = location;
+        shipment.quantity = quantity;
+        shipment.pickedQty = 0;
+        shipment.status = ShipmentStatus.CREATED;
+        return shipment;
+    }
+
+    public void picking(int pickedQty, String username) {
+        validatePickingQty(pickedQty);
+        this.pickedQty = pickedQty;
+        this.status = ShipmentStatus.PICKING;
+        this.pickedBy = username;
+    }
+
+    public void shipped(Long inventoryId, String username) {
+        this.status = ShipmentStatus.SHIPPED;
+        this.inventoryId = inventoryId;
+        this.shippedBy = username;
+    }
+
+    public void canceled() {
+        this.status = ShipmentStatus.CANCELED;
+        this.quantity = 0;
+        this.pickedQty = 0;
+    }
+
+    private static void validateQty(int qty) {
+        if (qty <= 0) {
+            throw new WarePulseException(ErrorCode.INVALID_SHIPMENT_QUANTITY);
+        }
+    }
+
+    private void validatePickingQty(int pickedQty) {
+        validateQty(pickedQty);
+        if (pickedQty > this.quantity) {
+            throw new WarePulseException(ErrorCode.SHIPMENT_INSPECTION_NOT_COMPLETED);
+        }
+    }
 }

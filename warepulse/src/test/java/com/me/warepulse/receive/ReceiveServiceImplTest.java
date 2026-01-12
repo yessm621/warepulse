@@ -202,7 +202,7 @@ class ReceiveServiceImplTest {
         // when & then
         assertThatThrownBy(() -> sut.createReceive(request))
                 .isInstanceOf(WarePulseException.class)
-                .hasFieldOrPropertyWithValue("errorCode", ErrorCode.NEGATIVE_INVENTORY_QUANTITY);
+                .hasFieldOrPropertyWithValue("errorCode", ErrorCode.INVALID_RECEIVE_QUANTITY);
     }
 
     @Test
@@ -253,7 +253,7 @@ class ReceiveServiceImplTest {
         // when & then
         assertThatThrownBy(() -> sut.inspectedReceive(receiveId, username, receivedQty))
                 .isInstanceOf(WarePulseException.class)
-                .hasFieldOrPropertyWithValue("errorCode", ErrorCode.NEGATIVE_INVENTORY_QUANTITY);
+                .hasFieldOrPropertyWithValue("errorCode", ErrorCode.INVALID_RECEIVE_QUANTITY);
     }
 
     @Test
