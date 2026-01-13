@@ -4,8 +4,6 @@ import com.me.warepulse.exception.ErrorCode;
 import com.me.warepulse.exception.WarePulseException;
 import com.me.warepulse.inventory.controller.dto.InventoryDto;
 import com.me.warepulse.inventory.entity.Inventory;
-import com.me.warepulse.inventory.entity.InventoryEvent;
-import com.me.warepulse.inventory.entity.InventoryEventType;
 import com.me.warepulse.inventory.repository.InventoryRepository;
 import com.me.warepulse.inventory.service.InventoryEventService;
 import com.me.warepulse.inventory.service.InventoryService;

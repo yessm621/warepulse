@@ -56,7 +56,7 @@ public enum ErrorCode {
     PICKING_QTY_EXCEEDED(HttpStatus.CONFLICT, "SH004", "피킹 수량이 예상 수량을 초과하여 처리할 수 없습니다."),
     SHIPMENT_INSPECTED_PERMISSION_DENIED(HttpStatus.FORBIDDEN, "SH005", "출고 검수 처리 권한이 없습니다."),
     SHIPMENT_COMPLETED_PERMISSION_DENIED(HttpStatus.FORBIDDEN, "SH006", "출고 완료 처리 권한이 없습니다."),
-    SHIPMENT_INSPECTION_NOT_COMPLETED(HttpStatus.CONFLICT, "SH007", "검수가 완료되지 않아 출고 완료 처리를 진행할 수 없습니다."),
+    SHIPMENT_INSPECTION_NOT_COMPLETED(HttpStatus.CONFLICT, "SH007", "피킹이 완료되지 않아 출고 완료 처리를 진행할 수 없습니다."),
 
     /* 조정, 실사 관련 */
     INVALID_ADJUSTMENT(HttpStatus.BAD_REQUEST, "A001", "유효하지 않은 재고 조정입니다."),

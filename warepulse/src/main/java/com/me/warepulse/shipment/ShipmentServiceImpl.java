@@ -74,7 +74,7 @@ public class ShipmentServiceImpl implements ShipmentService {
         Shipment shipment = shipmentRepository.findById(shipmentId)
                 .orElseThrow(() -> new WarePulseException(ErrorCode.SHIPMENT_NOT_FOUND));
 
-        if (!shipment.getStatus().equals(ShipmentStatus.CREATED)) {
+        if (!shipment.getStatus().equals(ShipmentStatus.PICKING)) {
             throw new WarePulseException(ErrorCode.SHIPMENT_INSPECTION_NOT_COMPLETED);
         }
 

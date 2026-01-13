@@ -3,8 +3,8 @@ package com.me.warepulse.shipment;
 import com.me.warepulse.exception.ErrorCode;
 import com.me.warepulse.exception.WarePulseException;
 import com.me.warepulse.location.Location;
-import com.me.warepulse.utils.BaseEntity;
 import com.me.warepulse.sku.Sku;
+import com.me.warepulse.utils.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -81,7 +81,12 @@ public class Shipment extends BaseEntity {
     private void validatePickingQty(int pickedQty) {
         validateQty(pickedQty);
         if (pickedQty > this.quantity) {
-            throw new WarePulseException(ErrorCode.SHIPMENT_INSPECTION_NOT_COMPLETED);
+            throw new WarePulseException(ErrorCode.PICKING_QTY_EXCEEDED);
         }
+    }
+
+    // 테스트 코드에서 사용
+    public void changeStatus(ShipmentStatus status) {
+        this.status = status;
     }
 }
