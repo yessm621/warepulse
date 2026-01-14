@@ -5,6 +5,7 @@ import com.me.warepulse.exception.WarePulseException;
 import com.me.warepulse.user.dto.SignupRequest;
 import com.me.warepulse.user.dto.SignupResponse;
 import com.me.warepulse.user.dto.UserListResponse;
+import com.me.warepulse.user.dto.UserRoleRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -49,6 +50,14 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                 .stream()
                 .map(UserListResponse::from)
                 .toList();
+    }
+
+    @Transactional
+    @Override
+    public void modifyUserRole(Long userId, UserRoleRequest request) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new WarePulseException(ErrorCode.USER_NOT_FOUND));
+        user.modifyUserRole(request.getUserRole());
     }
 
     @Transactional

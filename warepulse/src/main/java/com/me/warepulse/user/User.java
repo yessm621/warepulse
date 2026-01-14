@@ -48,4 +48,8 @@ public class User {
         user.role = role;
         return user;
     }
+
+    public void modifyUserRole(UserRole role) {
+        this.role = role;
+    }
 }
