@@ -5,12 +5,14 @@ import com.me.warepulse.exception.ErrorCode;
 import com.me.warepulse.exception.WarePulseException;
 import com.me.warepulse.location.LocationService;
 import com.me.warepulse.location.dto.LocationResponse;
+import com.me.warepulse.security.TestSecurityConfig;
 import com.me.warepulse.security.WithMockCustomUser;
 import com.me.warepulse.warehouse.dto.WarehouseRequest;
 import com.me.warepulse.warehouse.dto.WarehouseResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -27,6 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(WarehouseController.class)
+@Import(TestSecurityConfig.class)
 class WarehouseControllerTest {
 
     @Autowired
@@ -58,6 +61,23 @@ class WarehouseControllerTest {
                 .andExpect(jsonPath("$.data.name").value("고양-A"))
                 .andExpect(jsonPath("$.data.address").value("고양시"))
                 .andExpect(jsonPath("$.errorMessage").isEmpty());
+    }
+
+    @Test
+    @WithMockCustomUser(username = "username1", roles = "OPERATOR")
+    void createWarehouse_fail_with_operator() throws Exception {
+        WarehouseRequest request = new WarehouseRequest("고양-A", "고양시");
+        WarehouseResponse response = new WarehouseResponse(1L, "고양-A", "고양시", LocalDateTime.now());
+
+        given(warehouseService.create(any(WarehouseRequest.class))).willReturn(response);
+
+        mockMvc.perform(post("/warehouses")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request))
+                        .with(csrf()))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.status").value("fail"))
+                .andExpect(jsonPath("$.errorMessage.code").value("E002"));
     }
 
     @Test
@@ -105,6 +125,16 @@ class WarehouseControllerTest {
                         .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("success"));
+    }
+
+    @Test
+    @WithMockCustomUser(username = "username1", roles = "OPERATOR")
+    void deleteWarehouse_fail_with_operator() throws Exception {
+        mockMvc.perform(delete("/warehouses/{warehouseId}", 1L)
+                        .with(csrf()))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.status").value("fail"))
+                .andExpect(jsonPath("$.errorMessage.code").value("E002"));
     }
 
     @Test
