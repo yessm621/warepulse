@@ -166,7 +166,8 @@ class ReceiveServiceImplTest {
     @Test
     void createReceive_fail_location_not_found() {
         // given
-        ReceiveRequest request = new ReceiveRequest(101L, 101L, 10);
+        ReceiveRequest request = new ReceiveRequest(101L, 1L, 10);
+        given(skuRepository.findById(1L)).willReturn(Optional.of(sku));
         given(locationRepository.findById(101L))
                 .willThrow(new WarePulseException(ErrorCode.LOCATION_NOT_FOUND));
 
@@ -180,7 +181,6 @@ class ReceiveServiceImplTest {
     void createReceive_fail_sku_not_found() {
         // given
         ReceiveRequest request = new ReceiveRequest(101L, 101L, 10);
-        given(locationRepository.findById(101L)).willReturn(Optional.of(location));
         given(skuRepository.findById(101L))
                 .willThrow(new WarePulseException(ErrorCode.SKU_NOT_FOUND));
 
