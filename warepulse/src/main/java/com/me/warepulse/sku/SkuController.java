@@ -17,6 +17,7 @@ public class SkuController {
 
     private final SkuService skuService;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/skus")
     public ResponseEntity<ApiResponse<SkuResponse>> createSku(@Valid @RequestBody SkuRequest request) {
         SkuResponse response = skuService.createSku(request);
