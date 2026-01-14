@@ -62,14 +62,12 @@ public class Receive extends BaseEntity {
 
     private static void validateQty(int qty) {
         if (qty <= 0) {
-            throw new WarePulseException(ErrorCode.NEGATIVE_INVENTORY_QUANTITY);
+            throw new WarePulseException(ErrorCode.INVALID_RECEIVE_QUANTITY);
         }
     }
 
     private void validateInspect(int receivedQty) {
-        if (receivedQty <= 0) {
-            throw new WarePulseException(ErrorCode.NEGATIVE_INVENTORY_QUANTITY);
-        }
+        validateQty(receivedQty);
         if (receivedQty > this.expectedQty) {
             throw new WarePulseException(ErrorCode.RECEIVE_QTY_EXCEEDED);
         }

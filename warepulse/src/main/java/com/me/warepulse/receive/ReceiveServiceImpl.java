@@ -52,10 +52,10 @@ public class ReceiveServiceImpl implements ReceiveService {
 
     @Override
     public ReceiveResponse createReceive(ReceiveRequest request) {
-        Location location = locationRepository.findById(request.getLocationId())
-                .orElseThrow(() -> new WarePulseException(ErrorCode.LOCATION_NOT_FOUND));
         Sku sku = skuRepository.findById(request.getSkuId())
                 .orElseThrow(() -> new WarePulseException(ErrorCode.SKU_NOT_FOUND));
+        Location location = locationRepository.findById(request.getLocationId())
+                .orElseThrow(() -> new WarePulseException(ErrorCode.LOCATION_NOT_FOUND));
 
         Receive receive = Receive.create(sku, location, request.getExpectedQty());
         receiveRepository.save(receive);

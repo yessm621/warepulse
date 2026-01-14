@@ -4,8 +4,6 @@ import com.me.warepulse.exception.ErrorCode;
 import com.me.warepulse.exception.WarePulseException;
 import com.me.warepulse.inventory.controller.dto.InventoryDto;
 import com.me.warepulse.inventory.entity.Inventory;
-import com.me.warepulse.inventory.entity.InventoryEvent;
-import com.me.warepulse.inventory.entity.InventoryEventType;
 import com.me.warepulse.inventory.repository.InventoryRepository;
 import com.me.warepulse.inventory.service.InventoryEventService;
 import com.me.warepulse.inventory.service.InventoryService;
@@ -168,7 +166,8 @@ class ReceiveServiceImplTest {
     @Test
     void createReceive_fail_location_not_found() {
         // given
-        ReceiveRequest request = new ReceiveRequest(101L, 101L, 10);
+        ReceiveRequest request = new ReceiveRequest(101L, 1L, 10);
+        given(skuRepository.findById(1L)).willReturn(Optional.of(sku));
         given(locationRepository.findById(101L))
                 .willThrow(new WarePulseException(ErrorCode.LOCATION_NOT_FOUND));
 
@@ -182,7 +181,6 @@ class ReceiveServiceImplTest {
     void createReceive_fail_sku_not_found() {
         // given
         ReceiveRequest request = new ReceiveRequest(101L, 101L, 10);
-        given(locationRepository.findById(101L)).willReturn(Optional.of(location));
         given(skuRepository.findById(101L))
                 .willThrow(new WarePulseException(ErrorCode.SKU_NOT_FOUND));
 
@@ -202,7 +200,7 @@ class ReceiveServiceImplTest {
         // when & then
         assertThatThrownBy(() -> sut.createReceive(request))
                 .isInstanceOf(WarePulseException.class)
-                .hasFieldOrPropertyWithValue("errorCode", ErrorCode.NEGATIVE_INVENTORY_QUANTITY);
+                .hasFieldOrPropertyWithValue("errorCode", ErrorCode.INVALID_RECEIVE_QUANTITY);
     }
 
     @Test
@@ -253,7 +251,7 @@ class ReceiveServiceImplTest {
         // when & then
         assertThatThrownBy(() -> sut.inspectedReceive(receiveId, username, receivedQty))
                 .isInstanceOf(WarePulseException.class)
-                .hasFieldOrPropertyWithValue("errorCode", ErrorCode.NEGATIVE_INVENTORY_QUANTITY);
+                .hasFieldOrPropertyWithValue("errorCode", ErrorCode.INVALID_RECEIVE_QUANTITY);
     }
 
     @Test

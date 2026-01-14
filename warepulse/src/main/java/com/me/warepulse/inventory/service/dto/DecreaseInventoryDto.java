@@ -17,4 +17,8 @@ public class DecreaseInventoryDto {
 
     @Min(1)
     private int quantity;
+
+    public static DecreaseInventoryDto of(Long inventoryId, Long receiveId, DecreaseReason reason, int quantity) {
+        return new DecreaseInventoryDto(inventoryId, receiveId, reason, quantity);
+    }
 }
