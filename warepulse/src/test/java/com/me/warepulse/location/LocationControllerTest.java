@@ -7,6 +7,9 @@ import com.me.warepulse.location.dto.LocationRequest;
 import com.me.warepulse.location.dto.LocationResponse;
 import com.me.warepulse.security.TestSecurityConfig;
 import com.me.warepulse.security.WithMockCustomUser;
+import com.me.warepulse.sku.SkuType;
+import com.me.warepulse.sku.dto.SkuRequest;
+import com.me.warepulse.sku.dto.SkuResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -56,6 +59,24 @@ class LocationControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("success"))
                 .andExpect(jsonPath("$.errorMessage").isEmpty());
+    }
+
+    @Test
+    @WithMockCustomUser(username = "username1", roles = "OPERATOR")
+    void createLocation_fail_with_operator() throws Exception {
+        LocationRequest request = new LocationRequest(1L, "A-01-01", 100);
+        LocationResponse response = new LocationResponse(1L, "고양-A",
+                1L, "A-01-01", 100, LocalDateTime.now());
+
+        given(locationService.createLocation(any(LocationRequest.class))).willReturn(response);
+
+        mockMvc.perform(post("/locations")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request))
+                        .with(csrf()))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.status").value("fail"))
+                .andExpect(jsonPath("$.errorMessage.code").value("E002"));
     }
 
     @Test

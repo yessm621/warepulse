@@ -17,6 +17,7 @@ public class LocationController {
 
     private final LocationService locationService;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/locations")
     public ResponseEntity<ApiResponse<LocationResponse>> createLocation(@Valid @RequestBody LocationRequest request) {
         LocationResponse response = locationService.createLocation(request);
