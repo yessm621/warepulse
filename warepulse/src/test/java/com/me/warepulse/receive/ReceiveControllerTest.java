@@ -112,4 +112,19 @@ class ReceiveControllerTest {
                 .andExpect(jsonPath("$.data.receiveStatus").value("COMPLETED"))
                 .andExpect(jsonPath("$.errorMessage").isEmpty());
     }
+
+    @Test
+    @WithMockCustomUser
+    void canceledReceive() throws Exception {
+        ReceiveResponse response = new ReceiveResponse(1L, 1L, 1L, 10, 0, ReceiveStatus.INSPECTED.name(), 1L, "createdBy", "inspectedBy", "completedBy", LocalDateTime.now(), LocalDateTime.now());
+
+        given(receiveService.completedReceive(any(), any())).willReturn(response);
+
+        mockMvc.perform(patch("/receives/{receiveId}/canceled", 1L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("success"))
+                .andExpect(jsonPath("$.errorMessage").isEmpty());
+    }
 }
