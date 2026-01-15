@@ -67,6 +67,16 @@ public class ReceiveServiceImpl implements ReceiveService {
     public ReceiveResponse inspectedReceive(Long receiveId, String username, int receivedQty) {
         Receive receive = receiveRepository.findById(receiveId)
                 .orElseThrow(() -> new WarePulseException(ErrorCode.RECEIVE_NOT_FOUND));
+
+        if (!receive.getStatus().equals(ReceiveStatus.CREATED)) {
+            throw new WarePulseException(ErrorCode.RECEIVE_INSPECTION_INVALID_STATUS_CREATED);
+        }
+
+        int sumQuantity = inventoryRepository.sumQuantityByLocation(receive.getLocation().getId());
+        if (receive.getLocation().getCapacity() < (sumQuantity + receivedQty)) {
+            throw new WarePulseException(ErrorCode.LOCATION_CAPACITY_EXCEEDED);
+        }
+
         receive.inspect(receivedQty, username);
         return ReceiveResponse.from(receive);
     }
@@ -86,6 +96,18 @@ public class ReceiveServiceImpl implements ReceiveService {
         receive.complete(username, inventoryId);
 
         return ReceiveResponse.from(receive);
+    }
+
+    @Override
+    public void canceledReceive(Long receiveId) {
+        Receive receive = receiveRepository.findById(receiveId)
+                .orElseThrow(() -> new WarePulseException(ErrorCode.RECEIVE_NOT_FOUND));
+
+        if (receive.getStatus().equals(ReceiveStatus.COMPLETED)) {
+            throw new WarePulseException(ErrorCode.RECEIVE_CANNOT_CANCEL_COMPLETED);
+        }
+
+        receive.cancel();
     }
 
     private Long getInventory(Receive receive) {

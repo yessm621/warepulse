@@ -31,4 +31,11 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
     int availableQty(@Param("skuId") Long skuId, @Param("locationId") Long locationId);
 
     boolean existsBySkuIdAndLocationId(Long skuId, Long locationId);
+
+    @Query("""
+        select coalesce(sum(i.quantity), 0)
+        from Inventory i
+        where i.location.id = :locationId
+    """)
+    int sumQuantityByLocation(@Param("locationId") Long locationId);
 }

@@ -1,6 +1,5 @@
 package com.me.warepulse.inventory.controller.dto;
 
-import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,7 +13,6 @@ public class InventoryDto {
     private Long skuId;
     private Long locationId;
 
-    @Max(200)
     @Min(0)
     private int quantity;
 

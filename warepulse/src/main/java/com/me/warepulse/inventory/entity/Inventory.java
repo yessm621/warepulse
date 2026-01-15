@@ -46,7 +46,7 @@ public class Inventory extends BaseEntity {
         Inventory inventory = new Inventory();
         inventory.sku = sku;
         inventory.location = location;
-        inventory.quantity = quantity;
+        inventory.quantity = 0;
         inventory.reservedQty = 0;
         inventory.version = 0;
         return inventory;

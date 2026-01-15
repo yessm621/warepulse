@@ -79,6 +79,12 @@ public class Receive extends BaseEntity {
         this.inventoryId = inventoryId;
     }
 
+    public void cancel() {
+        this.status = ReceiveStatus.CANCELED;
+        this.expectedQty = 0;
+        this.receivedQty = 0;
+    }
+
     // 테스트 코드에서 사용
     public void changeStatus(ReceiveStatus status) {
         this.status = status;

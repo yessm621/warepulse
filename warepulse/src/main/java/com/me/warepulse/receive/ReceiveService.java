@@ -16,4 +16,6 @@ public interface ReceiveService {
     ReceiveResponse inspectedReceive(Long receiveId, String username, int receivedQty);
 
     ReceiveResponse completedReceive(Long receiveId, String username);
+
+    void canceledReceive(Long receivedId);
 }

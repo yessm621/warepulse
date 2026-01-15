@@ -48,6 +48,8 @@ public enum ErrorCode {
     RECEIVE_INSPECTED_PERMISSION_DENIED(HttpStatus.FORBIDDEN, "R005", "입고 검수 처리 권한이 없습니다."),
     RECEIVE_COMPLETED_PERMISSION_DENIED(HttpStatus.FORBIDDEN, "R006", "입고 완료 처리 권한이 없습니다."),
     RECEIVE_INSPECTION_NOT_COMPLETED(HttpStatus.CONFLICT, "R007", "검수가 완료되지 않아 입고 완료 처리를 진행할 수 없습니다."),
+    RECEIVE_INSPECTION_INVALID_STATUS_CREATED(HttpStatus.CONFLICT, "R008", "입고 상태가 CREATED가 아니어서 검수를 진행할 수 없습니다."),
+    RECEIVE_CANNOT_CANCEL_COMPLETED(HttpStatus.CONFLICT, "R009", "입고가 완료 상태이므로 취소할 수 없습니다."),
 
     /* 출고 관련 */
     SHIPMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "SH001", "출고 정보를 찾을 수 없습니다."),

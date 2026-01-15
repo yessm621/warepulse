@@ -51,4 +51,10 @@ public class ReceiveController {
         ReceiveResponse receive = receiveService.completedReceive(receiveId, user.getUsername());
         return ResponseEntity.ok(ApiResponse.success(receive));
     }
+
+    @PatchMapping("/receives/{receiveId}/canceled")
+    public ResponseEntity<ApiResponse> canceledReceive(@PathVariable("receiveId") Long receiveId) {
+        receiveService.canceledReceive(receiveId);
+        return ResponseEntity.ok(ApiResponse.successWithNoContent());
+    }
 }
