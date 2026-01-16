@@ -3,10 +3,13 @@ package com.me.warepulse.shipment;
 import com.me.warepulse.exception.ErrorCode;
 import com.me.warepulse.exception.WarePulseException;
 import com.me.warepulse.inventory.entity.EventEnum.DecreaseReason;
+import com.me.warepulse.inventory.entity.EventEnum.IncreaseReason;
 import com.me.warepulse.inventory.entity.Inventory;
 import com.me.warepulse.inventory.repository.InventoryRepository;
 import com.me.warepulse.inventory.service.InventoryEventService;
 import com.me.warepulse.inventory.service.dto.DecreaseInventoryDto;
+import com.me.warepulse.inventory.service.dto.ReleaseInventoryDto;
+import com.me.warepulse.inventory.service.dto.ReserveInventoryDto;
 import com.me.warepulse.location.Location;
 import com.me.warepulse.location.LocationRepository;
 import com.me.warepulse.shipment.dto.ShipmentRequest;
@@ -54,7 +57,14 @@ public class ShipmentServiceImpl implements ShipmentService {
         Location location = locationRepository.findById(request.getLocationId())
                 .orElseThrow(() -> new WarePulseException(ErrorCode.LOCATION_NOT_FOUND));
 
-        Shipment shipment = Shipment.create(sku, location, request.getQuantity());
+        Inventory inventory = inventoryRepository.findBySkuIdAndLocationId(request.getSkuId(), request.getLocationId())
+                .orElseThrow(() -> new WarePulseException(ErrorCode.SHIPMENT_NO_AVAILABLE_STOCK));
+
+        if (request.getQuantity() > (inventory.getQuantity() - inventory.getReservedQty())) {
+            throw new WarePulseException(ErrorCode.SHIPMENT_CREATED_QTY_EXCEEDED);
+        }
+
+        Shipment shipment = Shipment.create(sku, location, request.getQuantity(), inventory.getId());
         shipmentRepository.save(shipment);
 
         return ShipmentResponse.from(shipment);
@@ -64,6 +74,19 @@ public class ShipmentServiceImpl implements ShipmentService {
     public ShipmentResponse pickingShipment(Long shipmentId, int pickedQty, String username) {
         Shipment shipment = shipmentRepository.findById(shipmentId)
                 .orElseThrow(() -> new WarePulseException(ErrorCode.SHIPMENT_NOT_FOUND));
+
+        if (!shipment.getStatus().equals(ShipmentStatus.CREATED)) {
+            throw new WarePulseException(ErrorCode.SHIPMENT_INSPECTION_INVALID_STATUS_CREATED);
+        }
+
+        Long inventoryId = getInventory(shipment);
+        ReserveInventoryDto dto = ReserveInventoryDto.of(
+                inventoryId,
+                shipment.getId(),
+                DecreaseReason.RESERVED,
+                pickedQty
+        );
+        inventoryEventService.reserve(dto);
 
         shipment.picking(pickedQty, username);
         return ShipmentResponse.from(shipment);
@@ -90,6 +113,22 @@ public class ShipmentServiceImpl implements ShipmentService {
     public ShipmentResponse canceledShipment(Long shipmentId) {
         Shipment shipment = shipmentRepository.findById(shipmentId)
                 .orElseThrow(() -> new WarePulseException(ErrorCode.SHIPMENT_NOT_FOUND));
+
+        if (shipment.getStatus().equals(ShipmentStatus.SHIPPED)) {
+            throw new WarePulseException(ErrorCode.SHIPMENT_ALREADY_SHIPPED);
+        }
+
+        if (shipment.getStatus().equals(ShipmentStatus.PICKING)) {
+            Long inventoryId = getInventory(shipment);
+            ReleaseInventoryDto dto = ReleaseInventoryDto.of(
+                    inventoryId,
+                    shipment.getId(),
+                    IncreaseReason.RESERVED_CANCEL,
+                    shipment.getPickedQty()
+            );
+            inventoryEventService.release(dto);
+        }
+
         shipment.canceled();
         return ShipmentResponse.from(shipment);
     }

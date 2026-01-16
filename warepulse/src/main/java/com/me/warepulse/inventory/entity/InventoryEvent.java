@@ -35,7 +35,6 @@ public class InventoryEvent extends BaseEntity {
 
     private int quantity;
 
-    // todo:: payload, json 타입
     @Convert(converter = PayloadJsonMapConverter.class)
     @Column(columnDefinition = "json")
     private Map<String, Object> payload;
