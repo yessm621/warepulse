@@ -127,9 +127,12 @@ class ShipmentServiceImplTest {
     @Test
     void createShipment_success() {
         // given
-        ShipmentRequest request = new ShipmentRequest(1L, 1L, 10);
+        Long skuId = 1L;
+        Long locaitonId = 1L;
+        ShipmentRequest request = new ShipmentRequest(locaitonId, skuId, 10);
         given(skuRepository.findById(1L)).willReturn(Optional.of(sku));
         given(locationRepository.findById(1L)).willReturn(Optional.of(location));
+        given(inventoryRepository.findBySkuIdAndLocationId(skuId, locaitonId)).willReturn(Optional.of(inventory));
 
         // when
         ShipmentResponse result = sut.createShipment(request);
@@ -176,9 +179,12 @@ class ShipmentServiceImplTest {
     @Test
     void createShipment_fail_shipment_invalid_quantity() {
         // given
-        ShipmentRequest request = new ShipmentRequest(1L, 1L, 0);
+        Long skuId = 1L;
+        Long locaitonId = 1L;
+        ShipmentRequest request = new ShipmentRequest(locaitonId, skuId, 0);
         given(skuRepository.findById(1L)).willReturn(Optional.of(sku));
         given(locationRepository.findById(1L)).willReturn(Optional.of(location));
+        given(inventoryRepository.findBySkuIdAndLocationId(skuId, locaitonId)).willReturn(Optional.of(inventory));
 
         // when & then
         assertThatThrownBy(() -> sut.createShipment(request))
@@ -193,6 +199,8 @@ class ShipmentServiceImplTest {
         int pickedQty = 10;
         String pickingBy = "pickingBy";
         given(shipmentRepository.findById(shipmentId)).willReturn(Optional.of(shipment));
+        given(inventoryRepository.findBySkuIdAndLocationId(shipment.getSku().getId(), shipment.getLocation().getId()))
+                .willReturn(Optional.of(inventory));
 
         // when
         ShipmentResponse result = sut.pickingShipment(shipmentId, pickedQty, pickingBy);
@@ -230,6 +238,8 @@ class ShipmentServiceImplTest {
         int pickedQty = 0;
         String pickingBy = "pickingBy";
         given(shipmentRepository.findById(shipmentId)).willReturn(Optional.of(shipment));
+        given(inventoryRepository.findBySkuIdAndLocationId(shipment.getSku().getId(), shipment.getLocation().getId()))
+                .willReturn(Optional.of(inventory));
 
         // when & then
         assertThatThrownBy(() -> sut.pickingShipment(shipmentId, pickedQty, pickingBy))
@@ -244,11 +254,28 @@ class ShipmentServiceImplTest {
         int pickedQty = 100;
         String pickingBy = "pickingBy";
         given(shipmentRepository.findById(shipmentId)).willReturn(Optional.of(shipment));
+        given(inventoryRepository.findBySkuIdAndLocationId(shipment.getSku().getId(), shipment.getLocation().getId()))
+                .willReturn(Optional.of(inventory));
 
         // when & then
         assertThatThrownBy(() -> sut.pickingShipment(shipmentId, pickedQty, pickingBy))
                 .isInstanceOf(WarePulseException.class)
-                .hasFieldOrPropertyWithValue("errorCode", ErrorCode.PICKING_QTY_EXCEEDED);
+                .hasFieldOrPropertyWithValue("errorCode", ErrorCode.SHIPMENT_QTY_EXCEEDED);
+    }
+
+    @Test
+    void pickingShipment_fail_shipment_inspection_invalid_status_created() {
+        // given
+        Long shipmentId = 1L;
+        int pickedQty = 100;
+        String pickingBy = "pickingBy";
+        shipment.changeStatus(ShipmentStatus.SHIPPED);
+        given(shipmentRepository.findById(shipmentId)).willReturn(Optional.of(shipment));
+
+        // when & then
+        assertThatThrownBy(() -> sut.pickingShipment(shipmentId, pickedQty, pickingBy))
+                .isInstanceOf(WarePulseException.class)
+                .hasFieldOrPropertyWithValue("errorCode", ErrorCode.SHIPMENT_INSPECTION_INVALID_STATUS_CREATED);
     }
 
     @Test
@@ -348,5 +375,18 @@ class ShipmentServiceImplTest {
         assertThatThrownBy(() -> sut.canceledShipment(shipmentId))
                 .isInstanceOf(WarePulseException.class)
                 .hasFieldOrPropertyWithValue("errorCode", ErrorCode.SHIPMENT_NOT_FOUND);
+    }
+
+    @Test
+    void canceledShipment_fail_shipment_already_shipped() {
+        // given
+        Long shipmentId = 1L;
+        shipment.changeStatus(ShipmentStatus.SHIPPED);
+        given(shipmentRepository.findById(shipmentId)).willReturn(Optional.of(shipment));
+
+        // when & then
+        assertThatThrownBy(() -> sut.canceledShipment(shipmentId))
+                .isInstanceOf(WarePulseException.class)
+                .hasFieldOrPropertyWithValue("errorCode", ErrorCode.SHIPMENT_ALREADY_SHIPPED);
     }
 }

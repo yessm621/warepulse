@@ -8,6 +8,7 @@ import com.me.warepulse.security.WithMockCustomUser;
 import com.me.warepulse.user.dto.SignupRequest;
 import com.me.warepulse.user.dto.SignupResponse;
 import com.me.warepulse.user.dto.UserListResponse;
+import com.me.warepulse.user.dto.UserRoleRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -101,6 +102,33 @@ class UserControllerTest {
         // when & then
         mockMvc.perform(get("/users"))
                 .andExpect(status().isUnauthorized());
+        then(userService).shouldHaveNoInteractions();
+    }
+
+    @Test
+    @WithMockCustomUser(username = "admin", roles = "ADMIN")
+    void modifyUserRole_success_with_admin() throws Exception {
+        UserRoleRequest request = new UserRoleRequest(UserRole.ADMIN);
+
+        mockMvc.perform(patch("/users/{userId}", 1L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request))
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("success"));
+    }
+
+    @Test
+    @WithMockCustomUser(username = "username1", roles = "OPERATOR")
+    void modifyUserRole_fail_with_operator() throws Exception {
+        UserRoleRequest request = new UserRoleRequest(UserRole.ADMIN);
+
+        mockMvc.perform(patch("/users/{userId}", 1L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request))
+                        .with(csrf()))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.status").value("fail"));
         then(userService).shouldHaveNoInteractions();
     }
 

@@ -59,6 +59,24 @@ class LocationControllerTest {
     }
 
     @Test
+    @WithMockCustomUser(username = "username1", roles = "OPERATOR")
+    void createLocation_fail_with_operator() throws Exception {
+        LocationRequest request = new LocationRequest(1L, "A-01-01", 100);
+        LocationResponse response = new LocationResponse(1L, "고양-A",
+                1L, "A-01-01", 100, LocalDateTime.now());
+
+        given(locationService.createLocation(any(LocationRequest.class))).willReturn(response);
+
+        mockMvc.perform(post("/locations")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request))
+                        .with(csrf()))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.status").value("fail"))
+                .andExpect(jsonPath("$.errorMessage.code").value("E002"));
+    }
+
+    @Test
     @WithMockCustomUser(username = "admin", roles = "ADMIN")
     void createLocation_fail_warehouse_not_found() throws Exception {
         LocationRequest request = new LocationRequest(100L, "A-01-01", 100);

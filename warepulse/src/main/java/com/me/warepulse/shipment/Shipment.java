@@ -42,7 +42,7 @@ public class Shipment extends BaseEntity {
     private String pickedBy;
     private String shippedBy;
 
-    public static Shipment create(Sku sku, Location location, int quantity) {
+    public static Shipment create(Sku sku, Location location, int quantity, Long inventoryId) {
         validateQty(quantity);
         Shipment shipment = new Shipment();
         shipment.sku = sku;
@@ -50,6 +50,7 @@ public class Shipment extends BaseEntity {
         shipment.quantity = quantity;
         shipment.pickedQty = 0;
         shipment.status = ShipmentStatus.CREATED;
+        shipment.inventoryId = inventoryId;
         return shipment;
     }
 
@@ -81,11 +82,11 @@ public class Shipment extends BaseEntity {
     private void validatePickingQty(int pickedQty) {
         validateQty(pickedQty);
         if (pickedQty > this.quantity) {
-            throw new WarePulseException(ErrorCode.PICKING_QTY_EXCEEDED);
+            throw new WarePulseException(ErrorCode.SHIPMENT_QTY_EXCEEDED);
         }
     }
 
-    // 테스트 코드에서 사용
+    // Using test code
     public void changeStatus(ShipmentStatus status) {
         this.status = status;
     }

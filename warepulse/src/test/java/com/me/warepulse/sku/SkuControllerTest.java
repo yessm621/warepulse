@@ -7,6 +7,8 @@ import com.me.warepulse.security.TestSecurityConfig;
 import com.me.warepulse.security.WithMockCustomUser;
 import com.me.warepulse.sku.dto.SkuRequest;
 import com.me.warepulse.sku.dto.SkuResponse;
+import com.me.warepulse.warehouse.dto.WarehouseRequest;
+import com.me.warepulse.warehouse.dto.WarehouseResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -55,6 +57,23 @@ class SkuControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("success"))
                 .andExpect(jsonPath("$.errorMessage").isEmpty());
+    }
+
+    @Test
+    @WithMockCustomUser(username = "username1", roles = "OPERATOR")
+    void createSku_fail_with_operator() throws Exception {
+        SkuRequest request = new SkuRequest("HOOD-BLK-L", "블랙 후드 L", SkuType.EA);
+        SkuResponse response = new SkuResponse(1L, "HOOD-BLK-L", "블랙 후드 L", "단품", LocalDateTime.now());
+
+        given(skuService.createSku(any(SkuRequest.class))).willReturn(response);
+
+        mockMvc.perform(post("/skus")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request))
+                        .with(csrf()))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.status").value("fail"))
+                .andExpect(jsonPath("$.errorMessage.code").value("E002"));
     }
 
     @Test

@@ -17,4 +17,8 @@ public class ReleaseInventoryDto {
     
     @Min(1)
     private int reservedQty;
+
+    public static ReleaseInventoryDto of(Long inventoryId, Long shipmentId, IncreaseReason reason, int reservedQty) {
+        return new ReleaseInventoryDto(inventoryId, shipmentId, reason, reservedQty);
+    }
 }

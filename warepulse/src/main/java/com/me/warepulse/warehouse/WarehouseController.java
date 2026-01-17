@@ -19,6 +19,7 @@ public class WarehouseController {
     private final WarehouseService warehouseService;
     private final LocationService locationService;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/warehouses")
     public ResponseEntity<ApiResponse<WarehouseResponse>> createWarehouse(@RequestBody WarehouseRequest request) {
         WarehouseResponse response = warehouseService.create(request);

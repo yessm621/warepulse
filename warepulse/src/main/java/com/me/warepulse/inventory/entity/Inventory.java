@@ -46,7 +46,7 @@ public class Inventory extends BaseEntity {
         Inventory inventory = new Inventory();
         inventory.sku = sku;
         inventory.location = location;
-        inventory.quantity = quantity;
+        inventory.quantity = 0;
         inventory.reservedQty = 0;
         inventory.version = 0;
         return inventory;
@@ -66,23 +66,19 @@ public class Inventory extends BaseEntity {
 
     public void reserve(int reservedQty) {
         validateQty(reservedQty);
-
         int availableQty = this.quantity - this.reservedQty;
         if (reservedQty > availableQty) {
             throw new WarePulseException(ErrorCode.INSUFFICIENT_RESERVED_QUANTITY);
         }
-
         this.reservedQty += reservedQty;
     }
 
     public void release(int reservedQty) {
         validateQty(reservedQty);
-
         if (reservedQty > this.reservedQty) {
             throw new WarePulseException(ErrorCode.INSUFFICIENT_RELEASE_QUANTITY);
         }
-        this.quantity += reservedQty;
-        this.reservedQty = 0;
+        this.reservedQty -= reservedQty;
     }
 
     private static void validateQty(int qty) {

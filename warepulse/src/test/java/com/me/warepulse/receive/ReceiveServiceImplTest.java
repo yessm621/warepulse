@@ -61,6 +61,7 @@ class ReceiveServiceImplTest {
 
         location = Location.builder()
                 .id(10L)
+                .capacity(500)
                 .build();
 
         inventory = Inventory.builder()
@@ -255,6 +256,36 @@ class ReceiveServiceImplTest {
     }
 
     @Test
+    void inspectedReceive_fail_receive_created_not_inspection() {
+        // given
+        Long receiveId = 1L;
+        String username = "inspector";
+        int receivedQty = 5;
+        receive.changeStatus(ReceiveStatus.COMPLETED);
+        given(receiveRepository.findById(receiveId)).willReturn(Optional.of(receive));
+
+        // when & then
+        assertThatThrownBy(() -> sut.inspectedReceive(receiveId, username, receivedQty))
+                .isInstanceOf(WarePulseException.class)
+                .hasFieldOrPropertyWithValue("errorCode", ErrorCode.RECEIVE_INSPECTION_NOT_CREATED);
+    }
+
+    @Test
+    void inspectedReceive_fail_receive_location_capacity_exceeded() {
+        // given
+        Long receiveId = 1L;
+        String username = "inspector";
+        int receivedQty = 5;
+        given(receiveRepository.findById(receiveId)).willReturn(Optional.of(receive));
+        given(inventoryRepository.sumQuantityByLocation(any())).willReturn(600);
+
+        // when & then
+        assertThatThrownBy(() -> sut.inspectedReceive(receiveId, username, receivedQty))
+                .isInstanceOf(WarePulseException.class)
+                .hasFieldOrPropertyWithValue("errorCode", ErrorCode.LOCATION_CAPACITY_EXCEEDED);
+    }
+
+    @Test
     void inspectedReceive_fail_receivedQty_exceeded() {
         // given
         Long receiveId = 1L;
@@ -360,5 +391,43 @@ class ReceiveServiceImplTest {
         assertThatThrownBy(() -> sut.completedReceive(receiveId, username))
                 .isInstanceOf(WarePulseException.class)
                 .hasFieldOrPropertyWithValue("errorCode", ErrorCode.DUPLICATE_INVENTORY);
+    }
+
+    @Test
+    void canceledReceive_success() {
+        // given
+        Long receiveId = 1L;
+        given(receiveRepository.findById(receiveId)).willReturn(Optional.of(receive));
+
+        // when
+        sut.canceledReceive(receiveId);
+
+        // then
+        assertThat(receive.getStatus()).isEqualTo(ReceiveStatus.CANCELED);
+    }
+
+    @Test
+    void canceledReceive_receive_not_found() {
+        // given
+        Long receiveId = 1L;
+        given(receiveRepository.findById(receiveId)).willReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> sut.canceledReceive(receiveId))
+                .isInstanceOf(WarePulseException.class)
+                .hasFieldOrPropertyWithValue("errorCode", ErrorCode.RECEIVE_NOT_FOUND);
+    }
+
+    @Test
+    void canceledReceive_fail_receive_completed_not_canceled() {
+        // given
+        Long receiveId = 1L;
+        receive.changeStatus(ReceiveStatus.COMPLETED);
+        given(receiveRepository.findById(receiveId)).willReturn(Optional.of(receive));
+
+        // when & then
+        assertThatThrownBy(() -> sut.canceledReceive(receiveId))
+                .isInstanceOf(WarePulseException.class)
+                .hasFieldOrPropertyWithValue("errorCode", ErrorCode.RECEIVE_CANNOT_CANCEL_COMPLETED);
     }
 }

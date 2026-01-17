@@ -4,6 +4,7 @@ import com.me.warepulse.exception.ApiResponse;
 import com.me.warepulse.user.dto.SignupRequest;
 import com.me.warepulse.user.dto.SignupResponse;
 import com.me.warepulse.user.dto.UserListResponse;
+import com.me.warepulse.user.dto.UserRoleRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -32,11 +33,17 @@ public class UserController {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
+    @PatchMapping("/users/{userId}")
+    public ResponseEntity<ApiResponse> modifyUserRole(@PathVariable("userId") Long userId,
+                                                      @RequestBody UserRoleRequest request) {
+        userService.modifyUserRole(userId, request);
+        return ResponseEntity.ok(ApiResponse.successWithNoContent());
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/users/{userId}")
     public ResponseEntity<ApiResponse> deleteUser(@PathVariable("userId") Long userId) {
         userService.deleteUser(userId);
         return ResponseEntity.ok(ApiResponse.successWithNoContent());
     }
-
-    //todo:: 사용자 권한 변경 (ADMIN 권한만 변경 가능하도록)
 }
