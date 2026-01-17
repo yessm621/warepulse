@@ -63,9 +63,8 @@ public class InventoryEventServiceImpl implements InventoryEventService {
     }
 
     private Inventory getInventory(Long inventoryId) {
-        Inventory inventory = inventoryRepository.findById(inventoryId)
+        return inventoryRepository.findById(inventoryId)
                 .orElseThrow(() -> new WarePulseException(ErrorCode.INVENTORY_NOT_FOUND));
-        return inventory;
     }
 
     private void saveEvent(Inventory inventory, InventoryEventType type, int quantity, Object reason) {

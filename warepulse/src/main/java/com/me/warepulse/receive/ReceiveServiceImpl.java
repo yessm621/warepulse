@@ -45,8 +45,7 @@ public class ReceiveServiceImpl implements ReceiveService {
     @Transactional(readOnly = true)
     @Override
     public ReceiveResponse findReceive(Long receiveId) {
-        Receive receive = receiveRepository.findById(receiveId)
-                .orElseThrow(() -> new WarePulseException(ErrorCode.RECEIVE_NOT_FOUND));
+        Receive receive = getReceive(receiveId);
         return ReceiveResponse.from(receive);
     }
 
@@ -65,11 +64,10 @@ public class ReceiveServiceImpl implements ReceiveService {
 
     @Override
     public ReceiveResponse inspectedReceive(Long receiveId, String username, int receivedQty) {
-        Receive receive = receiveRepository.findById(receiveId)
-                .orElseThrow(() -> new WarePulseException(ErrorCode.RECEIVE_NOT_FOUND));
+        Receive receive = getReceive(receiveId);
 
-        if (!receive.getStatus().equals(ReceiveStatus.CREATED)) {
-            throw new WarePulseException(ErrorCode.RECEIVE_INSPECTION_INVALID_STATUS_CREATED);
+        if (receive.getStatus() != ReceiveStatus.CREATED) {
+            throw new WarePulseException(ErrorCode.RECEIVE_INSPECTION_NOT_CREATED);
         }
 
         int sumQuantity = inventoryRepository.sumQuantityByLocation(receive.getLocation().getId());
@@ -83,10 +81,9 @@ public class ReceiveServiceImpl implements ReceiveService {
 
     @Override
     public ReceiveResponse completedReceive(Long receiveId, String username) {
-        Receive receive = receiveRepository.findById(receiveId)
-                .orElseThrow(() -> new WarePulseException(ErrorCode.RECEIVE_NOT_FOUND));
+        Receive receive = getReceive(receiveId);
 
-        if (!receive.getStatus().equals(ReceiveStatus.INSPECTED)) {
+        if (receive.getStatus() != ReceiveStatus.INSPECTED) {
             throw new WarePulseException(ErrorCode.RECEIVE_INSPECTION_NOT_COMPLETED);
         }
 
@@ -100,14 +97,18 @@ public class ReceiveServiceImpl implements ReceiveService {
 
     @Override
     public void canceledReceive(Long receiveId) {
-        Receive receive = receiveRepository.findById(receiveId)
-                .orElseThrow(() -> new WarePulseException(ErrorCode.RECEIVE_NOT_FOUND));
+        Receive receive = getReceive(receiveId);
 
-        if (receive.getStatus().equals(ReceiveStatus.COMPLETED)) {
+        if (receive.getStatus() == ReceiveStatus.COMPLETED) {
             throw new WarePulseException(ErrorCode.RECEIVE_CANNOT_CANCEL_COMPLETED);
         }
 
         receive.cancel();
+    }
+
+    private Receive getReceive(Long receiveId) {
+        return receiveRepository.findById(receiveId)
+                .orElseThrow(() -> new WarePulseException(ErrorCode.RECEIVE_NOT_FOUND));
     }
 
     private Long getInventory(Receive receive) {

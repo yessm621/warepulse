@@ -260,7 +260,7 @@ class ShipmentServiceImplTest {
         // when & then
         assertThatThrownBy(() -> sut.pickingShipment(shipmentId, pickedQty, pickingBy))
                 .isInstanceOf(WarePulseException.class)
-                .hasFieldOrPropertyWithValue("errorCode", ErrorCode.SHIPMENT_PICKING_QTY_EXCEEDED);
+                .hasFieldOrPropertyWithValue("errorCode", ErrorCode.SHIPMENT_QTY_EXCEEDED);
     }
 
     @Test

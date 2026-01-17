@@ -267,7 +267,7 @@ class ReceiveServiceImplTest {
         // when & then
         assertThatThrownBy(() -> sut.inspectedReceive(receiveId, username, receivedQty))
                 .isInstanceOf(WarePulseException.class)
-                .hasFieldOrPropertyWithValue("errorCode", ErrorCode.RECEIVE_INSPECTION_INVALID_STATUS_CREATED);
+                .hasFieldOrPropertyWithValue("errorCode", ErrorCode.RECEIVE_INSPECTION_NOT_CREATED);
     }
 
     @Test

@@ -82,11 +82,11 @@ public class Shipment extends BaseEntity {
     private void validatePickingQty(int pickedQty) {
         validateQty(pickedQty);
         if (pickedQty > this.quantity) {
-            throw new WarePulseException(ErrorCode.SHIPMENT_PICKING_QTY_EXCEEDED);
+            throw new WarePulseException(ErrorCode.SHIPMENT_QTY_EXCEEDED);
         }
     }
 
-    // 테스트 코드에서 사용
+    // Using test code
     public void changeStatus(ShipmentStatus status) {
         this.status = status;
     }

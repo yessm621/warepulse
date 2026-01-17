@@ -45,8 +45,7 @@ public class ShipmentServiceImpl implements ShipmentService {
     @Transactional(readOnly = true)
     @Override
     public ShipmentResponse findShipment(Long shipmentId) {
-        Shipment shipment = shipmentRepository.findById(shipmentId)
-                .orElseThrow(() -> new WarePulseException(ErrorCode.SHIPMENT_NOT_FOUND));
+        Shipment shipment = getShipment(shipmentId);
         return ShipmentResponse.from(shipment);
     }
 
@@ -72,21 +71,14 @@ public class ShipmentServiceImpl implements ShipmentService {
 
     @Override
     public ShipmentResponse pickingShipment(Long shipmentId, int pickedQty, String username) {
-        Shipment shipment = shipmentRepository.findById(shipmentId)
-                .orElseThrow(() -> new WarePulseException(ErrorCode.SHIPMENT_NOT_FOUND));
+        Shipment shipment = getShipment(shipmentId);
 
-        if (!shipment.getStatus().equals(ShipmentStatus.CREATED)) {
+        if (shipment.getStatus() != ShipmentStatus.CREATED) {
             throw new WarePulseException(ErrorCode.SHIPMENT_INSPECTION_INVALID_STATUS_CREATED);
         }
 
         Long inventoryId = getInventory(shipment);
-        ReserveInventoryDto dto = ReserveInventoryDto.of(
-                inventoryId,
-                shipment.getId(),
-                DecreaseReason.RESERVED,
-                pickedQty
-        );
-        inventoryEventService.reserve(dto);
+        reserveInventoryEvent(pickedQty, shipment, inventoryId);
 
         shipment.picking(pickedQty, username);
         return ShipmentResponse.from(shipment);
@@ -94,10 +86,9 @@ public class ShipmentServiceImpl implements ShipmentService {
 
     @Override
     public ShipmentResponse shippedShipment(Long shipmentId, String username) {
-        Shipment shipment = shipmentRepository.findById(shipmentId)
-                .orElseThrow(() -> new WarePulseException(ErrorCode.SHIPMENT_NOT_FOUND));
+        Shipment shipment = getShipment(shipmentId);
 
-        if (!shipment.getStatus().equals(ShipmentStatus.PICKING)) {
+        if (shipment.getStatus() != ShipmentStatus.PICKING) {
             throw new WarePulseException(ErrorCode.SHIPMENT_INSPECTION_NOT_COMPLETED);
         }
 
@@ -111,26 +102,24 @@ public class ShipmentServiceImpl implements ShipmentService {
 
     @Override
     public ShipmentResponse canceledShipment(Long shipmentId) {
-        Shipment shipment = shipmentRepository.findById(shipmentId)
-                .orElseThrow(() -> new WarePulseException(ErrorCode.SHIPMENT_NOT_FOUND));
+        Shipment shipment = getShipment(shipmentId);
 
-        if (shipment.getStatus().equals(ShipmentStatus.SHIPPED)) {
+        if (shipment.getStatus() == ShipmentStatus.SHIPPED) {
             throw new WarePulseException(ErrorCode.SHIPMENT_ALREADY_SHIPPED);
         }
 
-        if (shipment.getStatus().equals(ShipmentStatus.PICKING)) {
+        if (shipment.getStatus() == ShipmentStatus.PICKING) {
             Long inventoryId = getInventory(shipment);
-            ReleaseInventoryDto dto = ReleaseInventoryDto.of(
-                    inventoryId,
-                    shipment.getId(),
-                    IncreaseReason.RESERVED_CANCEL,
-                    shipment.getPickedQty()
-            );
-            inventoryEventService.release(dto);
+            releaseInventoryEvent(shipment, inventoryId);
         }
 
         shipment.canceled();
         return ShipmentResponse.from(shipment);
+    }
+
+    private Shipment getShipment(Long shipmentId) {
+        return shipmentRepository.findById(shipmentId)
+                .orElseThrow(() -> new WarePulseException(ErrorCode.SHIPMENT_NOT_FOUND));
     }
 
     private Long getInventory(Shipment shipment) {
@@ -147,5 +136,25 @@ public class ShipmentServiceImpl implements ShipmentService {
                 shipment.getPickedQty()
         );
         inventoryEventService.shipment(dto);
+    }
+
+    private void reserveInventoryEvent(int pickedQty, Shipment shipment, Long inventoryId) {
+        ReserveInventoryDto dto = ReserveInventoryDto.of(
+                inventoryId,
+                shipment.getId(),
+                DecreaseReason.RESERVED,
+                pickedQty
+        );
+        inventoryEventService.reserve(dto);
+    }
+
+    private void releaseInventoryEvent(Shipment shipment, Long inventoryId) {
+        ReleaseInventoryDto dto = ReleaseInventoryDto.of(
+                inventoryId,
+                shipment.getId(),
+                IncreaseReason.RESERVED_CANCEL,
+                shipment.getPickedQty()
+        );
+        inventoryEventService.release(dto);
     }
 }

@@ -54,23 +54,10 @@ public class Receive extends BaseEntity {
     }
 
     public void inspect(int receivedQty, String username) {
-        validateInspect(receivedQty);
+        validateReceivedQty(receivedQty);
         this.receivedQty = receivedQty;
         this.status = ReceiveStatus.INSPECTED;
         this.inspectedBy = username;
-    }
-
-    private static void validateQty(int qty) {
-        if (qty <= 0) {
-            throw new WarePulseException(ErrorCode.INVALID_RECEIVE_QUANTITY);
-        }
-    }
-
-    private void validateInspect(int receivedQty) {
-        validateQty(receivedQty);
-        if (receivedQty > this.expectedQty) {
-            throw new WarePulseException(ErrorCode.RECEIVE_QTY_EXCEEDED);
-        }
     }
 
     public void complete(String username, Long inventoryId) {
@@ -85,7 +72,20 @@ public class Receive extends BaseEntity {
         this.receivedQty = 0;
     }
 
-    // 테스트 코드에서 사용
+    private static void validateQty(int qty) {
+        if (qty <= 0) {
+            throw new WarePulseException(ErrorCode.INVALID_RECEIVE_QUANTITY);
+        }
+    }
+
+    private void validateReceivedQty(int receivedQty) {
+        validateQty(receivedQty);
+        if (receivedQty > this.expectedQty) {
+            throw new WarePulseException(ErrorCode.RECEIVE_QTY_EXCEEDED);
+        }
+    }
+
+    // Using test code
     public void changeStatus(ReceiveStatus status) {
         this.status = status;
     }
