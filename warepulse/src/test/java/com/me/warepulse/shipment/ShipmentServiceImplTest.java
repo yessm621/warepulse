@@ -128,11 +128,11 @@ class ShipmentServiceImplTest {
     void createShipment_success() {
         // given
         Long skuId = 1L;
-        Long locaitonId = 1L;
-        ShipmentRequest request = new ShipmentRequest(locaitonId, skuId, 10);
+        Long locationId = 1L;
+        ShipmentRequest request = new ShipmentRequest(locationId, skuId, 10);
         given(skuRepository.findById(1L)).willReturn(Optional.of(sku));
         given(locationRepository.findById(1L)).willReturn(Optional.of(location));
-        given(inventoryRepository.findBySkuIdAndLocationId(skuId, locaitonId)).willReturn(Optional.of(inventory));
+        given(inventoryRepository.findBySkuIdAndLocationId(skuId, locationId)).willReturn(Optional.of(inventory));
 
         // when
         ShipmentResponse result = sut.createShipment(request);
