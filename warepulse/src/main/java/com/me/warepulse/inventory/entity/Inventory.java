@@ -86,4 +86,8 @@ public class Inventory extends BaseEntity {
             throw new WarePulseException(ErrorCode.NEGATIVE_INVENTORY_QUANTITY);
         }
     }
+
+    public void adjustment(int delta) {
+        this.quantity += delta;
+    }
 }

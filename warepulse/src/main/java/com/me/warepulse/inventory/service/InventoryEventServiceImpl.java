@@ -1,5 +1,6 @@
 package com.me.warepulse.inventory.service;
 
+import com.me.warepulse.adjustment.AdjustmentInventoryDto;
 import com.me.warepulse.exception.ErrorCode;
 import com.me.warepulse.exception.WarePulseException;
 import com.me.warepulse.inventory.entity.Inventory;
@@ -7,10 +8,7 @@ import com.me.warepulse.inventory.entity.InventoryEvent;
 import com.me.warepulse.inventory.entity.InventoryEventType;
 import com.me.warepulse.inventory.repository.InventoryEventRepository;
 import com.me.warepulse.inventory.repository.InventoryRepository;
-import com.me.warepulse.inventory.service.dto.DecreaseInventoryDto;
-import com.me.warepulse.inventory.service.dto.IncreaseInventoryDto;
-import com.me.warepulse.inventory.service.dto.ReleaseInventoryDto;
-import com.me.warepulse.inventory.service.dto.ReserveInventoryDto;
+import com.me.warepulse.inventory.service.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,6 +58,13 @@ public class InventoryEventServiceImpl implements InventoryEventService {
         inventory.release(dto.getReservedQty());
 
         saveEvent(inventory, InventoryEventType.RELEASE, dto.getReservedQty(), dto.getReason());
+    }
+
+    @Override
+    public void adjustment(AdjustmentInventoryDto dto) {
+        Inventory inventory = getInventory(dto.getInventoryId());
+        inventory.adjustment(dto.getDelta());
+        saveEvent(inventory, InventoryEventType.ADJUSTED, dto.getDelta(), dto.getReason());
     }
 
     private Inventory getInventory(Long inventoryId) {

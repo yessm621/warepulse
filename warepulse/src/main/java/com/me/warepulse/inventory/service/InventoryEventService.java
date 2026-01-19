@@ -1,17 +1,17 @@
 package com.me.warepulse.inventory.service;
 
-import com.me.warepulse.inventory.service.dto.DecreaseInventoryDto;
-import com.me.warepulse.inventory.service.dto.IncreaseInventoryDto;
-import com.me.warepulse.inventory.service.dto.ReleaseInventoryDto;
-import com.me.warepulse.inventory.service.dto.ReserveInventoryDto;
+import com.me.warepulse.adjustment.AdjustmentInventoryDto;
+import com.me.warepulse.inventory.service.dto.*;
 
 public interface InventoryEventService {
 
-    void receive(IncreaseInventoryDto request);
+    void receive(IncreaseInventoryDto dto);
 
-    void shipment(DecreaseInventoryDto request);
+    void shipment(DecreaseInventoryDto dto);
 
-    void reserve(ReserveInventoryDto request);
+    void reserve(ReserveInventoryDto dto);
 
-    void release(ReleaseInventoryDto request);
+    void release(ReleaseInventoryDto dto);
+
+    void adjustment(AdjustmentInventoryDto dto);
 }
