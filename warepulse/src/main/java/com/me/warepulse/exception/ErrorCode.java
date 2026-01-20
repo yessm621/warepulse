@@ -64,9 +64,10 @@ public enum ErrorCode {
     SHIPMENT_INSPECTION_INVALID_STATUS_CREATED(HttpStatus.CONFLICT, "SH010", "출고 상태가 CREATED가 아니어서 피킹을 진행할 수 없습니다."),
 
     /* 조정, 실사 관련 */
-    INVALID_ADJUSTMENT(HttpStatus.BAD_REQUEST, "A001", "유효하지 않은 재고 조정입니다."),
-    ADJUSTMENT_REASON_REQUIRED(HttpStatus.BAD_REQUEST, "A002", "재고 조정 사유는 필수입니다."),
-    ADJUSTMENT_PERMISSION_DENIED(HttpStatus.FORBIDDEN, "A003", "재고 조정 권한이 없습니다."),
+    ADJUSTMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "A001", "재고 조정 내용을 찾을 수 없습니다."),
+    INVALID_ADJUSTMENT(HttpStatus.BAD_REQUEST, "A002", "유효하지 않은 재고 조정입니다."),
+    ADJUSTMENT_REASON_REQUIRED(HttpStatus.BAD_REQUEST, "A003", "재고 조정 사유는 필수입니다."),
+    ADJUSTMENT_PERMISSION_DENIED(HttpStatus.FORBIDDEN, "A004", "재고 조정 권한이 없습니다."),
     /* 공통 */
     INVALID_REQUEST(HttpStatus.BAD_REQUEST, "E001", "잘못된 요청입니다."),
     ACCESS_DENIED_EXCEPTION(HttpStatus.UNAUTHORIZED, "E002", "접근 권한이 없습니다."),
