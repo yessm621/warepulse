@@ -32,7 +32,7 @@ public class AdjustmentServiceImpl implements AdjustmentService {
     private final InventoryEventService inventoryEventService;
 
     @Override
-    public List<AdjustmentResponse> getAdjustments() {
+    public List<AdjustmentResponse> findAdjustments() {
         return adjustmentRepository.findAll()
                 .stream()
                 .map(AdjustmentResponse::from)
@@ -40,7 +40,7 @@ public class AdjustmentServiceImpl implements AdjustmentService {
     }
 
     @Override
-    public AdjustmentResponse getAdjustment(Long adjustmentId) {
+    public AdjustmentResponse findAdjustment(Long adjustmentId) {
         return adjustmentRepository.findById(adjustmentId)
                 .map(AdjustmentResponse::from)
                 .orElseThrow(() -> new WarePulseException(ErrorCode.ADJUSTMENT_NOT_FOUND));

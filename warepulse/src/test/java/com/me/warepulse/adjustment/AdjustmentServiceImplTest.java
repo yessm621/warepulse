@@ -87,12 +87,12 @@ class AdjustmentServiceImplTest {
     }
 
     @Test
-    void getAdjustments_success() {
+    void findAdjustments_success() {
         // given
         given(adjustmentRepository.findAll()).willReturn(List.of(adjustment, adjustment));
 
         // when
-        List<AdjustmentResponse> result = sut.getAdjustments();
+        List<AdjustmentResponse> result = sut.findAdjustments();
 
         // then
         assertThat(result).hasSize(2);
@@ -101,13 +101,13 @@ class AdjustmentServiceImplTest {
     }
 
     @Test
-    void getAdjustment_success() {
+    void findAdjustment_success() {
         // given
         Long adjustmentId = 1L;
         given(adjustmentRepository.findById(adjustmentId)).willReturn(Optional.of(adjustment));
 
         // when
-        AdjustmentResponse result = sut.getAdjustment(adjustmentId);
+        AdjustmentResponse result = sut.findAdjustment(adjustmentId);
 
         // then
         assertThat(result).isNotNull();
@@ -118,14 +118,14 @@ class AdjustmentServiceImplTest {
     }
 
     @Test
-    void getAdjustment_fail() {
+    void findAdjustment_fail() {
         // given
         Long adjustmentId = 101L;
         given(adjustmentRepository.findById(adjustmentId))
                 .willThrow(new WarePulseException(ErrorCode.ADJUSTMENT_NOT_FOUND));
 
         // when & then
-        assertThatThrownBy(() -> sut.getAdjustment(adjustmentId))
+        assertThatThrownBy(() -> sut.findAdjustment(adjustmentId))
                 .isInstanceOf(WarePulseException.class)
                 .hasFieldOrPropertyWithValue("errorCode", ErrorCode.ADJUSTMENT_NOT_FOUND);
     }
@@ -149,6 +149,8 @@ class AdjustmentServiceImplTest {
 
         assertThat(savedAdjustment.getDelta()).isEqualTo(-1);
         assertThat(savedAdjustment.getReason()).isEqualTo(AdjustmentReason.MANUAL_CORRECTION);
+
+        then(inventoryEventService).should().adjustment(any(AdjustmentInventoryDto.class));
     }
 
     @Test

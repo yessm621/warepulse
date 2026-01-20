@@ -7,9 +7,9 @@ import java.util.List;
 
 public interface AdjustmentService {
 
-    List<AdjustmentResponse> getAdjustments();
+    List<AdjustmentResponse> findAdjustments();
 
-    AdjustmentResponse getAdjustment(Long adjustmentId);
+    AdjustmentResponse findAdjustment(Long adjustmentId);
 
     AdjustmentResponse create(AdjustmentRequest request);
 }
