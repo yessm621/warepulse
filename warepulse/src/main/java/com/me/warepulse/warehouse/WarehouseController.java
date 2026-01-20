@@ -14,38 +14,39 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/warehouses")
 public class WarehouseController {
 
     private final WarehouseService warehouseService;
     private final LocationService locationService;
 
     @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping("/warehouses")
+    @PostMapping
     public ResponseEntity<ApiResponse<WarehouseResponse>> createWarehouse(@RequestBody WarehouseRequest request) {
         WarehouseResponse response = warehouseService.create(request);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
-    @GetMapping("/warehouses")
+    @GetMapping
     public ResponseEntity<ApiResponse<List<WarehouseResponse>>> getWarehouses() {
         List<WarehouseResponse> warehouses = warehouseService.findWarehouses();
         return ResponseEntity.ok(ApiResponse.success(warehouses));
     }
 
-    @GetMapping("/warehouses/{warehouseId}")
+    @GetMapping("/{warehouseId}")
     public ResponseEntity<ApiResponse<WarehouseResponse>> getWarehouse(@PathVariable("warehouseId") Long warehouseId) {
         WarehouseResponse warehouse = warehouseService.findWarehouse(warehouseId);
         return ResponseEntity.ok(ApiResponse.success(warehouse));
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/warehouses/{warehouseId}")
+    @DeleteMapping("/{warehouseId}")
     public ResponseEntity<ApiResponse> deleteWarehouse(@PathVariable("warehouseId") Long warehouseId) {
         warehouseService.deleteWarehouse(warehouseId);
         return ResponseEntity.ok(ApiResponse.successWithNoContent());
     }
 
-    @GetMapping("/warehouses/{warehouseId}/locations")
+    @GetMapping("/{warehouseId}/locations")
     public ResponseEntity<ApiResponse<List<LocationResponse>>> findLocationByWarehouseId(
             @PathVariable("warehouseId") Long warehouseId) {
         List<LocationResponse> locations = locationService.findLocationByWarehouseId(warehouseId);

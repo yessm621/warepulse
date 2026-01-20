@@ -14,29 +14,30 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/receives")
 public class ReceiveController {
 
     private final ReceiveService receiveService;
 
-    @GetMapping("/receives")
+    @GetMapping
     public ResponseEntity<ApiResponse<List<ReceiveResponse>>> findReceives() {
         List<ReceiveResponse> receives = receiveService.findReceives();
         return ResponseEntity.ok(ApiResponse.success(receives));
     }
 
-    @GetMapping("/receives/{receiveId}")
+    @GetMapping("/{receiveId}")
     public ResponseEntity<ApiResponse<ReceiveResponse>> findReceive(@PathVariable("receiveId") Long receiveId) {
         ReceiveResponse receive = receiveService.findReceive(receiveId);
         return ResponseEntity.ok(ApiResponse.success(receive));
     }
 
-    @PostMapping("/receives")
+    @PostMapping
     public ResponseEntity<ApiResponse<ReceiveResponse>> createReceive(@RequestBody ReceiveRequest request) {
         ReceiveResponse receive = receiveService.createReceive(request);
         return ResponseEntity.ok(ApiResponse.success(receive));
     }
 
-    @PatchMapping("/receives/{receiveId}/inspected")
+    @PatchMapping("/{receiveId}/inspected")
     public ResponseEntity<ApiResponse<ReceiveResponse>> inspectedReceive(
             @PathVariable("receiveId") Long receiveId,
             @RequestBody ReceiveInspectedRequest request,
@@ -45,14 +46,14 @@ public class ReceiveController {
         return ResponseEntity.ok(ApiResponse.success(receive));
     }
 
-    @PatchMapping("/receives/{receiveId}/completed")
+    @PatchMapping("/{receiveId}/completed")
     public ResponseEntity<ApiResponse<ReceiveResponse>> completedReceive(
             @PathVariable("receiveId") Long receiveId, @AuthenticationPrincipal CustomUserDetails user) {
         ReceiveResponse receive = receiveService.completedReceive(receiveId, user.getUsername());
         return ResponseEntity.ok(ApiResponse.success(receive));
     }
 
-    @PatchMapping("/receives/{receiveId}/canceled")
+    @PatchMapping("/{receiveId}/canceled")
     public ResponseEntity<ApiResponse> canceledReceive(@PathVariable("receiveId") Long receiveId) {
         receiveService.canceledReceive(receiveId);
         return ResponseEntity.ok(ApiResponse.successWithNoContent());
