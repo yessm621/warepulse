@@ -27,8 +27,8 @@ public class UserController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/users")
-    public ResponseEntity<ApiResponse<List<UserListResponse>>> getUsers(@AuthenticationPrincipal CustomUserDetails user) {
-        List<UserListResponse> users = userService.findUsers(user.getUsername());
+    public ResponseEntity<ApiResponse<List<UserListResponse>>> getUsers() {
+        List<UserListResponse> users = userService.findUsers();
         return ResponseEntity.ok(ApiResponse.success(users));
     }
 

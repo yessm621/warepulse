@@ -14,29 +14,30 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/shipments")
 public class ShipmentController {
 
     private final ShipmentService shipmentService;
 
-    @GetMapping("/shipments")
+    @GetMapping
     public ResponseEntity<ApiResponse<List<ShipmentResponse>>> findShipments() {
         List<ShipmentResponse> shipments = shipmentService.findShipments();
         return ResponseEntity.ok(ApiResponse.success(shipments));
     }
 
-    @GetMapping("/shipments/{shipmentId}")
+    @GetMapping("/{shipmentId}")
     public ResponseEntity<ApiResponse<ShipmentResponse>> findShipments(@PathVariable("shipmentId") Long shipmentId) {
         ShipmentResponse shipment = shipmentService.findShipment(shipmentId);
         return ResponseEntity.ok(ApiResponse.success(shipment));
     }
 
-    @PostMapping("/shipments")
+    @PostMapping
     public ResponseEntity<ApiResponse<ShipmentResponse>> createShipment(@RequestBody ShipmentRequest request) {
         ShipmentResponse shipment = shipmentService.createShipment(request);
         return ResponseEntity.ok(ApiResponse.success(shipment));
     }
 
-    @PatchMapping("/shipments/{shipmentId}/picking")
+    @PatchMapping("/{shipmentId}/picking")
     public ResponseEntity<ApiResponse<ShipmentResponse>> pickingShipment(
             @PathVariable("shipmentId") Long shipmentId,
             @RequestBody ShipmentPickingRequest request,
@@ -45,14 +46,14 @@ public class ShipmentController {
         return ResponseEntity.ok(ApiResponse.success(shipment));
     }
 
-    @PatchMapping("/shipments/{shipmentId}/shipped")
+    @PatchMapping("/{shipmentId}/shipped")
     public ResponseEntity<ApiResponse<ShipmentResponse>> shippedShipment(
             @PathVariable("shipmentId") Long shipmentId, @AuthenticationPrincipal CustomUserDetails user) {
         ShipmentResponse shipment = shipmentService.shippedShipment(shipmentId, user.getUsername());
         return ResponseEntity.ok(ApiResponse.success(shipment));
     }
 
-    @PatchMapping("/shipments/{shipmentId}/canceled")
+    @PatchMapping("/{shipmentId}/canceled")
     public ResponseEntity<ApiResponse<ShipmentResponse>> canceledShipment(@PathVariable("shipmentId") Long shipmentId) {
         ShipmentResponse shipment = shipmentService.canceledShipment(shipmentId);
         return ResponseEntity.ok(ApiResponse.success(shipment));

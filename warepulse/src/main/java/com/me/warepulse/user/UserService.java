@@ -11,7 +11,7 @@ public interface UserService {
 
     SignupResponse signup(SignupRequest request);
 
-    List<UserListResponse> findUsers(String username);
+    List<UserListResponse> findUsers();
 
     void modifyUserRole(Long userId, UserRoleRequest request);
 

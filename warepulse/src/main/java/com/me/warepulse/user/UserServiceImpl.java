@@ -45,7 +45,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public List<UserListResponse> findUsers(String username) {
+    public List<UserListResponse> findUsers() {
         return userRepository.findAll()
                 .stream()
                 .map(UserListResponse::from)

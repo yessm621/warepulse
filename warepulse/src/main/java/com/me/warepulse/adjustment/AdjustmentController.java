@@ -12,24 +12,25 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/adjustments")
 public class AdjustmentController {
 
     private final AdjustmentService adjustmentService;
 
-    @GetMapping("/adjustments")
+    @GetMapping
     public ResponseEntity<ApiResponse<List<AdjustmentResponse>>> findAdjustments() {
         List<AdjustmentResponse> adjustments = adjustmentService.findAdjustments();
         return ResponseEntity.ok(ApiResponse.success(adjustments));
     }
 
-    @GetMapping("/adjustments/{adjustmentId}")
+    @GetMapping("/{adjustmentId}")
     public ResponseEntity<ApiResponse<AdjustmentResponse>> findAdjustment(@PathVariable("adjustmentId") Long adjustmentId) {
         AdjustmentResponse adjustment = adjustmentService.findAdjustment(adjustmentId);
         return ResponseEntity.ok(ApiResponse.success(adjustment));
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping("/adjustments")
+    @PostMapping
     public ResponseEntity<ApiResponse<AdjustmentResponse>> createAdjustment(@RequestBody AdjustmentRequest request) {
         AdjustmentResponse adjustment = adjustmentService.create(request);
         return ResponseEntity.ok(ApiResponse.success(adjustment));
