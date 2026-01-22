@@ -1,2 +1,3 @@
 rootProject.name = 'warepulse-multi'
-include("warepulse")
+include 'warepulse'
+include 'service-discovery'
