@@ -1,3 +1,4 @@
 rootProject.name = 'warepulse-multi'
 include 'warepulse'
 include 'service-discovery'
+include 'apigateway-service'
