@@ -15,6 +15,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/users")
 public class UserController {
 
     private final UserService userService;
@@ -26,14 +27,14 @@ public class UserController {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/users")
+    @GetMapping
     public ResponseEntity<ApiResponse<List<UserListResponse>>> getUsers() {
         List<UserListResponse> users = userService.findUsers();
         return ResponseEntity.ok(ApiResponse.success(users));
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @PatchMapping("/users/{userId}")
+    @PatchMapping("/{userId}")
     public ResponseEntity<ApiResponse> modifyUserRole(@PathVariable("userId") Long userId,
                                                       @RequestBody UserRoleRequest request) {
         userService.modifyUserRole(userId, request);
@@ -41,7 +42,7 @@ public class UserController {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/users/{userId}")
+    @DeleteMapping("/{userId}")
     public ResponseEntity<ApiResponse> deleteUser(@PathVariable("userId") Long userId) {
         userService.deleteUser(userId);
         return ResponseEntity.ok(ApiResponse.successWithNoContent());

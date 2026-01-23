@@ -59,14 +59,16 @@ public class SecurityConfig {
                 .httpBasic(auth -> auth.disable());
 
         http.authorizeHttpRequests(auth -> auth
-                .requestMatchers("/login", "/signup").permitAll()
+                .requestMatchers("/users/login", "/users/signup").permitAll()
                 .anyRequest().authenticated()
         );
 
-        http
-                .addFilterBefore(new JwtFilter(jwtToken), LoginFilter.class)
-                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtToken, objectMapper),
-                        UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(new JwtFilter(jwtToken), LoginFilter.class);
+
+        LoginFilter loginFilter = new LoginFilter(authenticationManager(authenticationConfiguration), jwtToken, objectMapper);
+        loginFilter.setFilterProcessesUrl("/users/login");
+
+        http.addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class);
 
         http
                 .sessionManagement(session -> session

@@ -1,0 +1,24 @@
+server:
+  port: 8888
+
+spring:
+  application:
+    name: config-service
+  cloud:
+    config:
+      server:
+        git: # default
+          uri: git@github.com:yessm621/warehouse-config.git
+          default-label: main
+          search-paths: ./**
+          ignore-local-ssh-settings: true
+          private-key: ${PRIVATE_KEY}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    shutdown:
+      enabled: true
