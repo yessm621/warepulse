@@ -8,9 +8,11 @@ spring:
     config:
       server:
         git: # default
-          uri: https://github.com/yessm621/warehouse-config
+          uri: git@github.com:yessm621/warehouse-config.git
           default-label: main
           search-paths: ./**
+          ignore-local-ssh-settings: true
+          private-key: ${PRIVATE_KEY}
 
 management:
   endpoints:
