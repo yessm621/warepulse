@@ -18,9 +18,7 @@ import java.io.IOException;
 
 @Slf4j
 @RequiredArgsConstructor
-public class JwtFilter extends OncePerRequestFilter {
-
-    private final JwtToken jwtToken;
+public class GatewayAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
@@ -30,23 +28,9 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String authorization = request.getHeader("Authorization");
-        if (authorization == null || !authorization.startsWith("Bearer ")) {
-            log.error("[TOKEN] Token has a Null");
-            filterChain.doFilter(request, response);
-            return;
-        }
-
-        String token = authorization.split(" ")[1];
-        if (jwtToken.isExpired(token)) {
-            log.info("[TOKEN] Token has expired");
-            filterChain.doFilter(request, response);
-            return;
-        }
-
-        String username = jwtToken.getUsername(token);
-        UserRole role = UserRole.valueOf(jwtToken.getRole(token).replace("ROLE_", ""));
-        User user = User.authUser(username, "password_temp", role);
+        String username = request.getHeader("X-User-Name");
+        String role = request.getHeader("X-User-Role");
+        User user = User.authUser(username, "password_temp", UserRole.valueOf(role.replace("ROLE_", "")));
 
         CustomUserDetails customUserDetails = new CustomUserDetails(user);
         Authentication authToken = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());

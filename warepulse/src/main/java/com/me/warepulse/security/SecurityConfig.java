@@ -1,7 +1,7 @@
 package com.me.warepulse.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.me.warepulse.security.jwt.JwtFilter;
+import com.me.warepulse.security.jwt.GatewayAuthenticationFilter;
 import com.me.warepulse.security.jwt.JwtToken;
 import com.me.warepulse.security.jwt.LoginFilter;
 import jakarta.servlet.http.HttpServletRequest;
@@ -63,7 +63,7 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
         );
 
-        http.addFilterBefore(new JwtFilter(jwtToken), LoginFilter.class);
+        http.addFilterBefore(new GatewayAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         LoginFilter loginFilter = new LoginFilter(authenticationManager(authenticationConfiguration), jwtToken, objectMapper);
         loginFilter.setFilterProcessesUrl("/users/login");
