@@ -2,17 +2,13 @@ package com.me.warepulse.receive;
 
 import com.me.warepulse.exception.ErrorCode;
 import com.me.warepulse.exception.WarePulseException;
-import com.me.warepulse.inventory.controller.dto.InventoryDto;
-import com.me.warepulse.inventory.entity.EventEnum.IncreaseReason;
-import com.me.warepulse.inventory.entity.Inventory;
 import com.me.warepulse.inventory.repository.InventoryRepository;
-import com.me.warepulse.inventory.service.InventoryEventService;
-import com.me.warepulse.inventory.service.InventoryService;
-import com.me.warepulse.inventory.service.dto.IncreaseInventoryDto;
 import com.me.warepulse.location.Location;
 import com.me.warepulse.location.LocationRepository;
 import com.me.warepulse.receive.dto.ReceiveRequest;
 import com.me.warepulse.receive.dto.ReceiveResponse;
+import com.me.warepulse.receive.messagequeue.InventoryReceiveDto;
+import com.me.warepulse.receive.messagequeue.KafkaProducer;
 import com.me.warepulse.sku.Sku;
 import com.me.warepulse.sku.SkuRepository;
 import lombok.AllArgsConstructor;
@@ -30,8 +26,7 @@ public class ReceiveServiceImpl implements ReceiveService {
     private final SkuRepository skuRepository;
     private final LocationRepository locationRepository;
     private final InventoryRepository inventoryRepository;
-    private final InventoryService inventoryService;
-    private final InventoryEventService inventoryEventService;
+    private final KafkaProducer kafkaProducer;
 
     @Transactional(readOnly = true)
     @Override
@@ -87,10 +82,14 @@ public class ReceiveServiceImpl implements ReceiveService {
             throw new WarePulseException(ErrorCode.RECEIVE_INSPECTION_NOT_COMPLETED);
         }
 
-        Long inventoryId = getInventory(receive);
-        increaseInventoryEvent(inventoryId, receive);
-
-        receive.complete(username, inventoryId);
+        InventoryReceiveDto dto = InventoryReceiveDto.of(
+                receive.getSku().getId(),
+                receive.getLocation().getId(),
+                receiveId,
+                receive.getReceivedQty()
+        );
+        kafkaProducer.send("inventory-receive-topic", dto);
+        receive.complete(username);
 
         return ReceiveResponse.from(receive);
     }
@@ -109,30 +108,5 @@ public class ReceiveServiceImpl implements ReceiveService {
     private Receive getReceive(Long receiveId) {
         return receiveRepository.findById(receiveId)
                 .orElseThrow(() -> new WarePulseException(ErrorCode.RECEIVE_NOT_FOUND));
-    }
-
-    private Long getInventory(Receive receive) {
-        return inventoryRepository.findBySkuIdAndLocationId(receive.getSku().getId(), receive.getLocation().getId())
-                .map(Inventory::getId)
-                .orElseGet(() -> createInventory(receive));
-    }
-
-    private Long createInventory(Receive receive) {
-        InventoryDto dto = InventoryDto.of(
-                receive.getSku().getId(),
-                receive.getLocation().getId(),
-                receive.getReceivedQty()
-        );
-        return inventoryService.createInventory(dto);
-    }
-
-    private void increaseInventoryEvent(Long inventoryId, Receive receive) {
-        IncreaseInventoryDto dto = IncreaseInventoryDto.of(
-                inventoryId,
-                receive.getId(),
-                IncreaseReason.PURCHASE_INBOUND,
-                receive.getReceivedQty()
-        );
-        inventoryEventService.receive(dto);
     }
 }

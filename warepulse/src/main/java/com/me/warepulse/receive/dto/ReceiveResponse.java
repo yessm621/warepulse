@@ -16,7 +16,6 @@ public class ReceiveResponse {
     private int expectedQty;
     private int receivedQty;
     private String receiveStatus;
-    private Long inventoryId;
     private String createdBy;
     private String inspectedBy;
     private String completedBy;
@@ -31,7 +30,6 @@ public class ReceiveResponse {
                 receive.getExpectedQty(),
                 receive.getReceivedQty(),
                 receive.getStatus().name(),
-                receive.getInventoryId(),
                 receive.getCreatedBy(),
                 receive.getInspectedBy(),
                 receive.getCompletedBy(),
