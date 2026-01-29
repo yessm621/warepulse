@@ -1,8 +1,8 @@
 package com.me.warepulse.receive;
 
+import com.me.warepulse.client.InventoryClient;
 import com.me.warepulse.exception.ErrorCode;
 import com.me.warepulse.exception.WarePulseException;
-import com.me.warepulse.inventory.repository.InventoryRepository;
 import com.me.warepulse.location.Location;
 import com.me.warepulse.location.LocationRepository;
 import com.me.warepulse.receive.dto.ReceiveRequest;
@@ -25,7 +25,7 @@ public class ReceiveServiceImpl implements ReceiveService {
     private final ReceiveRepository receiveRepository;
     private final SkuRepository skuRepository;
     private final LocationRepository locationRepository;
-    private final InventoryRepository inventoryRepository;
+    private final InventoryClient inventoryClient;
     private final KafkaProducer kafkaProducer;
 
     @Transactional(readOnly = true)
@@ -65,7 +65,7 @@ public class ReceiveServiceImpl implements ReceiveService {
             throw new WarePulseException(ErrorCode.RECEIVE_INSPECTION_NOT_CREATED);
         }
 
-        int sumQuantity = inventoryRepository.sumQuantityByLocation(receive.getLocation().getId());
+        int sumQuantity = inventoryClient.getSumQuantityByLocation(receive.getLocation().getId());
         if (receive.getLocation().getCapacity() < (sumQuantity + receivedQty)) {
             throw new WarePulseException(ErrorCode.LOCATION_CAPACITY_EXCEEDED);
         }

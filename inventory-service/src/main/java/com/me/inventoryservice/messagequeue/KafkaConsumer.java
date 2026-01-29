@@ -37,7 +37,6 @@ public class KafkaConsumer {
                         Inventory newInventory = Inventory.create(dto.getSkuId(), dto.getLocationId(), dto.getReceivedQty());
                         return inventoryRepository.save(newInventory);
                     });
-            //inventory.increase(dto.getReceivedQty());
 
             // inventoryEvent create
             IncreaseInventoryDto increaseDto = IncreaseInventoryDto.of(
