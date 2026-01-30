@@ -12,5 +12,5 @@ public interface InventoryClient {
     int getSumQuantityByLocation(@PathVariable("locationId") Long locationId);
 
     @GetMapping("/inventories/skus/{skuId}/locations/{locationId}")
-    Long getInventoryId(@PathVariable("skuId") Long skuId, @PathVariable("locationId") Long locationId);
+    InventoryDto getInventory(@PathVariable("skuId") Long skuId, @PathVariable("locationId") Long locationId);
 }

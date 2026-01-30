@@ -1,6 +1,6 @@
 package com.me.inventoryservice.service;
 
-import com.me.inventoryservice.entity.Inventory;
+import com.me.inventoryservice.controller.dto.InventoryDto;
 import com.me.inventoryservice.exception.ErrorCode;
 import com.me.inventoryservice.exception.InventoryServiceException;
 import com.me.inventoryservice.repository.InventoryRepository;
@@ -21,9 +21,9 @@ public class InventoryServiceImpl implements InventoryService {
     }
 
     @Override
-    public Long getInventoryId(Long skuId, Long locationId) {
+    public InventoryDto getInventory(Long skuId, Long locationId) {
         return inventoryRepository.findBySkuIdAndLocationId(skuId, locationId)
-                .map(Inventory::getId)
+                .map(InventoryDto::from)
                 .orElseThrow(() -> new InventoryServiceException(ErrorCode.INVENTORY_NOT_FOUND));
     }
 }
