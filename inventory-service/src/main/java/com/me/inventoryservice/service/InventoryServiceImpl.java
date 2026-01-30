@@ -1,5 +1,8 @@
 package com.me.inventoryservice.service;
 
+import com.me.inventoryservice.entity.Inventory;
+import com.me.inventoryservice.exception.ErrorCode;
+import com.me.inventoryservice.exception.InventoryServiceException;
 import com.me.inventoryservice.repository.InventoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,5 +18,12 @@ public class InventoryServiceImpl implements InventoryService {
     @Override
     public int totalQuantity(Long locationId) {
         return inventoryRepository.sumQuantityByLocation(locationId);
+    }
+
+    @Override
+    public Long getInventoryId(Long skuId, Long locationId) {
+        return inventoryRepository.findBySkuIdAndLocationId(skuId, locationId)
+                .map(Inventory::getId)
+                .orElseThrow(() -> new InventoryServiceException(ErrorCode.INVENTORY_NOT_FOUND));
     }
 }

@@ -3,6 +3,7 @@ package com.me.inventoryservice.controller;
 import com.me.inventoryservice.service.InventoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,5 +26,10 @@ public class InventoryController {
     @GetMapping("/locations/{locationId}/total-quantity")
     public int totalQuantity(@PathVariable("locationId") Long locationId) {
         return inventoryService.totalQuantity(locationId);
+    }
+
+    @GetMapping("/skus/{skuId}/locations/{locationId}")
+    public Long getInventoryId(@PathVariable("skuId") Long skuId, @PathVariable("locationId") Long locationId) {
+        return inventoryService.getInventoryId(skuId, locationId);
     }
 }

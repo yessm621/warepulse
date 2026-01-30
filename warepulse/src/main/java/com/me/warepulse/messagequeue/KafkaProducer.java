@@ -1,7 +1,9 @@
-package com.me.warepulse.receive.messagequeue;
+package com.me.warepulse.messagequeue;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.me.warepulse.exception.ErrorCode;
+import com.me.warepulse.exception.WarePulseException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -15,13 +17,14 @@ public class KafkaProducer {
     private final KafkaTemplate<String, String> kafkaTemplate;
     private final ObjectMapper objectMapper;
 
-    public void send(String topic, InventoryReceiveDto dto) {
+    // todo:: 제네릭을 사용해서 여러 dto를 받을 수 있게 수정하자.
+    public <T> void send(String topic, T dto) {
         try {
             String jsonInString = objectMapper.writeValueAsString(dto);
             kafkaTemplate.send(topic, jsonInString);
             log.info("Kafka Producer sent data from th Inventory microservice: {}", jsonInString);
         } catch (JsonProcessingException ex) {
-            ex.printStackTrace();
+            throw new WarePulseException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
     }
 }

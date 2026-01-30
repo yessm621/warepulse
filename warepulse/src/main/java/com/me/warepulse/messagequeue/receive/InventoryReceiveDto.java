@@ -1,4 +1,4 @@
-package com.me.warepulse.receive.messagequeue;
+package com.me.warepulse.messagequeue.receive;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,4 +1,4 @@
-package com.me.warepulse.receive.messagequeue;
+package com.me.warepulse.messagequeue;
 
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
