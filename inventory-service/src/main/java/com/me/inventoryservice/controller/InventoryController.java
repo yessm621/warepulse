@@ -1,6 +1,6 @@
 package com.me.inventoryservice.controller;
 
-import com.me.inventoryservice.controller.dto.InventoryDto;
+import com.me.inventoryservice.controller.response.InventoryResponse;
 import com.me.inventoryservice.service.InventoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
@@ -29,7 +29,7 @@ public class InventoryController {
     }
 
     @GetMapping("/skus/{skuId}/locations/{locationId}")
-    public InventoryDto getInventory(@PathVariable("skuId") Long skuId, @PathVariable("locationId") Long locationId) {
+    public InventoryResponse getInventory(@PathVariable("skuId") Long skuId, @PathVariable("locationId") Long locationId) {
         return inventoryService.getInventory(skuId, locationId);
     }
 }

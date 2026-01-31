@@ -5,10 +5,10 @@ import com.me.inventoryservice.entity.InventoryEvent;
 import com.me.inventoryservice.entity.InventoryEventType;
 import com.me.inventoryservice.exception.ErrorCode;
 import com.me.inventoryservice.exception.InventoryServiceException;
+import com.me.inventoryservice.messagequeue.dto.ReceiveDto;
+import com.me.inventoryservice.messagequeue.dto.ShipmentDto;
 import com.me.inventoryservice.repository.InventoryEventRepository;
 import com.me.inventoryservice.repository.InventoryRepository;
-import com.me.inventoryservice.service.dto.*;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,56 +25,51 @@ public class InventoryEventServiceImpl implements InventoryEventService {
     private final InventoryRepository inventoryRepository;
 
     @Override
-    public void receive(IncreaseInventoryDto dto) {
-        Inventory inventory = getInventory(dto.getInventoryId());
-
-        inventory.increase(dto.getQuantity());
-
-        saveEvent(inventory, InventoryEventType.INCREASE, dto.getQuantity(), dto.getReason());
+    public void receive(ReceiveDto dto) {
+        Inventory inventory = inventoryRepository.findBySkuIdAndLocationId(dto.getSkuId(), dto.getLocationId())
+                .orElseGet(() -> {
+                    Inventory newInventory = Inventory.create(dto.getSkuId(), dto.getLocationId(), dto.getReceivedQty());
+                    return inventoryRepository.save(newInventory);
+                });
+        inventory.increase(dto.getReceivedQty());
+        saveEvent(inventory, InventoryEventType.INCREASE, dto.getReceivedQty(), dto.getReason());
     }
 
     @Override
-    public void shipment(DecreaseInventoryDto dto) {
-        Inventory inventory = getInventory(dto.getInventoryId());
-
-        inventory.decrease(dto.getQuantity());
-
-        saveEvent(inventory, InventoryEventType.DECREASE, dto.getQuantity(), dto.getReason());
+    public void shipment(ShipmentDto dto) {
+        Inventory inventory = getInventory(dto.getSkuId(), dto.getLocationId());
+        inventory.decrease(dto.getReservedQty());
+        saveEvent(inventory, InventoryEventType.DECREASE, dto.getReservedQty(), dto.getReason());
     }
 
     @Override
-    public void reserve(ReserveInventoryDto dto) {
-        Inventory inventory = getInventory(dto.getInventoryId());
-
+    public void reserve(ShipmentDto dto) {
+        Inventory inventory = getInventory(dto.getSkuId(), dto.getLocationId());
         inventory.reserve(dto.getReservedQty());
-
         saveEvent(inventory, InventoryEventType.RESERVE, dto.getReservedQty(), dto.getReason());
     }
 
     @Override
-    public void release(ReleaseInventoryDto dto) {
-        Inventory inventory = getInventory(dto.getInventoryId());
-
+    public void release(ShipmentDto dto) {
+        Inventory inventory = getInventory(dto.getSkuId(), dto.getLocationId());
         inventory.release(dto.getReservedQty());
-
         saveEvent(inventory, InventoryEventType.RELEASE, dto.getReservedQty(), dto.getReason());
     }
 
-    @Override
+    /*@Override
     public void adjustment(AdjustmentInventoryDto dto) {
         Inventory inventory = getInventory(dto.getInventoryId());
         inventory.adjustment(dto.getDelta());
         saveEvent(inventory, InventoryEventType.ADJUSTED, dto.getDelta(), dto.getReason());
-    }
+    }*/
 
-    private Inventory getInventory(Long inventoryId) {
-        return inventoryRepository.findById(inventoryId)
+    private Inventory getInventory(Long skuId, Long locationId) {
+        return inventoryRepository.findBySkuIdAndLocationId(skuId, locationId)
                 .orElseThrow(() -> new InventoryServiceException(ErrorCode.INVENTORY_NOT_FOUND));
     }
 
     private void saveEvent(Inventory inventory, InventoryEventType type, int quantity, Object reason) {
         Map<String, Object> payload = createPayload(inventory, quantity, reason);
-
         InventoryEvent event = InventoryEvent.create(
                 inventory,
                 inventory.getSkuId(),
@@ -83,7 +78,6 @@ public class InventoryEventServiceImpl implements InventoryEventService {
                 quantity,
                 payload
         );
-
         inventoryEventRepository.save(event);
     }
 

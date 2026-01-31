@@ -5,12 +5,11 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public enum DecreaseReason {
-    SHIP_OUT("출고"),
-    DISPOSE("폐기"),
-    MOVE_OUT("재고 이동 출고"),
+public enum ReceiveReason {
+    PURCHASE_INBOUND("재고 입고"),
+    MOVE_INBOUND("재고 이동 입고"),
     RESERVED("재고 예약"),
-    ADJUSTMENT("재고 보정 감소");
+    RESERVED_CANCEL("재고 예약 취소");
 
     private final String message;
 }

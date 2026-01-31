@@ -1,16 +1,17 @@
 package com.me.inventoryservice.service;
 
-import com.me.inventoryservice.service.dto.*;
+import com.me.inventoryservice.messagequeue.dto.ReceiveDto;
+import com.me.inventoryservice.messagequeue.dto.ShipmentDto;
 
 public interface InventoryEventService {
 
-    void receive(IncreaseInventoryDto dto);
+    void receive(ReceiveDto dto);
 
-    void shipment(DecreaseInventoryDto dto);
+    void shipment(ShipmentDto dto);
 
-    void reserve(ReserveInventoryDto dto);
+    void reserve(ShipmentDto dto);
 
-    void release(ReleaseInventoryDto dto);
+    void release(ShipmentDto dto);
 
-    void adjustment(AdjustmentInventoryDto dto);
+    //void adjustment(AdjustmentInventoryDto dto);
 }

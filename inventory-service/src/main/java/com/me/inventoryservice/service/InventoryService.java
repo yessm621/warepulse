@@ -1,10 +1,10 @@
 package com.me.inventoryservice.service;
 
-import com.me.inventoryservice.controller.dto.InventoryDto;
+import com.me.inventoryservice.controller.response.InventoryResponse;
 
 public interface InventoryService {
 
     int totalQuantity(Long locationId);
 
-    InventoryDto getInventory(Long skuId, Long locationId);
+    InventoryResponse getInventory(Long skuId, Long locationId);
 }
