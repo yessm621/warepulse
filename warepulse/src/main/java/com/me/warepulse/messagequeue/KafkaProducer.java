@@ -17,7 +17,6 @@ public class KafkaProducer {
     private final KafkaTemplate<String, String> kafkaTemplate;
     private final ObjectMapper objectMapper;
 
-    // todo:: 제네릭을 사용해서 여러 dto를 받을 수 있게 수정하자.
     public <T> void send(String topic, T dto) {
         try {
             String jsonInString = objectMapper.writeValueAsString(dto);

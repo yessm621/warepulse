@@ -61,9 +61,8 @@ public class Shipment extends BaseEntity {
         this.pickedBy = username;
     }
 
-    public void shipped(Long inventoryId, String username) {
+    public void shipped(String username) {
         this.status = ShipmentStatus.SHIPPED;
-        this.inventoryId = inventoryId;
         this.shippedBy = username;
     }
 

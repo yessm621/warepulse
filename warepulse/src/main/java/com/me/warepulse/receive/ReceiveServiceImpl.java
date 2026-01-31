@@ -6,7 +6,8 @@ import com.me.warepulse.exception.WarePulseException;
 import com.me.warepulse.location.Location;
 import com.me.warepulse.location.LocationRepository;
 import com.me.warepulse.messagequeue.KafkaProducer;
-import com.me.warepulse.messagequeue.receive.InventoryReceiveDto;
+import com.me.warepulse.messagequeue.receive.ReceiveDto;
+import com.me.warepulse.messagequeue.receive.ReceiveReason;
 import com.me.warepulse.receive.dto.ReceiveRequest;
 import com.me.warepulse.receive.dto.ReceiveResponse;
 import com.me.warepulse.sku.Sku;
@@ -21,6 +22,8 @@ import java.util.List;
 @AllArgsConstructor
 @Transactional
 public class ReceiveServiceImpl implements ReceiveService {
+
+    private static final String INVENTORY_TOPIC = "inventory-receive-topic";
 
     private final ReceiveRepository receiveRepository;
     private final SkuRepository skuRepository;
@@ -82,13 +85,13 @@ public class ReceiveServiceImpl implements ReceiveService {
             throw new WarePulseException(ErrorCode.RECEIVE_INSPECTION_NOT_COMPLETED);
         }
 
-        InventoryReceiveDto dto = InventoryReceiveDto.of(
+        ReceiveDto dto = ReceiveDto.of(
                 receive.getSku().getId(),
                 receive.getLocation().getId(),
-                receiveId,
+                ReceiveReason.PURCHASE_INBOUND,
                 receive.getReceivedQty()
         );
-        kafkaProducer.send("inventory-receive-topic", dto);
+        kafkaProducer.send(INVENTORY_TOPIC, dto);
         receive.complete(username);
 
         return ReceiveResponse.from(receive);
