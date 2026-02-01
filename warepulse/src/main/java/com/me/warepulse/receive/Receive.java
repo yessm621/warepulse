@@ -37,8 +37,6 @@ public class Receive extends BaseEntity {
     @Enumerated(value = EnumType.STRING)
     private ReceiveStatus status;
 
-    private Long inventoryId;
-
     private String inspectedBy; // 검수 담당자
     private String completedBy; // 완료 처리 담당자
 
@@ -60,10 +58,9 @@ public class Receive extends BaseEntity {
         this.inspectedBy = username;
     }
 
-    public void complete(String username, Long inventoryId) {
+    public void complete(String username) {
         this.status = ReceiveStatus.COMPLETED;
         this.completedBy = username;
-        this.inventoryId = inventoryId;
     }
 
     public void cancel() {

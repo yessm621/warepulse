@@ -1,17 +1,14 @@
 package com.me.warepulse.shipment;
 
+import com.me.warepulse.client.InventoryClient;
+import com.me.warepulse.client.InventoryDto;
 import com.me.warepulse.exception.ErrorCode;
 import com.me.warepulse.exception.WarePulseException;
-import com.me.warepulse.inventory.entity.EventEnum.DecreaseReason;
-import com.me.warepulse.inventory.entity.EventEnum.IncreaseReason;
-import com.me.warepulse.inventory.entity.Inventory;
-import com.me.warepulse.inventory.repository.InventoryRepository;
-import com.me.warepulse.inventory.service.InventoryEventService;
-import com.me.warepulse.inventory.service.dto.DecreaseInventoryDto;
-import com.me.warepulse.inventory.service.dto.ReleaseInventoryDto;
-import com.me.warepulse.inventory.service.dto.ReserveInventoryDto;
 import com.me.warepulse.location.Location;
 import com.me.warepulse.location.LocationRepository;
+import com.me.warepulse.messagequeue.KafkaProducer;
+import com.me.warepulse.messagequeue.shipment.ShipmentDto;
+import com.me.warepulse.messagequeue.shipment.ShipmentReason;
 import com.me.warepulse.shipment.dto.ShipmentRequest;
 import com.me.warepulse.shipment.dto.ShipmentResponse;
 import com.me.warepulse.sku.Sku;
@@ -27,11 +24,13 @@ import java.util.List;
 @Transactional
 public class ShipmentServiceImpl implements ShipmentService {
 
+    private static final String INVENTORY_TOPIC = "inventory-shipment-topic";
+
     private final ShipmentRepository shipmentRepository;
     private final SkuRepository skuRepository;
     private final LocationRepository locationRepository;
-    private final InventoryRepository inventoryRepository;
-    private final InventoryEventService inventoryEventService;
+    private final InventoryClient inventoryClient;
+    private final KafkaProducer kafkaProducer;
 
     @Transactional(readOnly = true)
     @Override
@@ -56,14 +55,12 @@ public class ShipmentServiceImpl implements ShipmentService {
         Location location = locationRepository.findById(request.getLocationId())
                 .orElseThrow(() -> new WarePulseException(ErrorCode.LOCATION_NOT_FOUND));
 
-        Inventory inventory = inventoryRepository.findBySkuIdAndLocationId(request.getSkuId(), request.getLocationId())
-                .orElseThrow(() -> new WarePulseException(ErrorCode.SHIPMENT_NO_AVAILABLE_STOCK));
-
+        InventoryDto inventory = inventoryClient.getInventory(request.getSkuId(), request.getLocationId());
         if (request.getQuantity() > (inventory.getQuantity() - inventory.getReservedQty())) {
             throw new WarePulseException(ErrorCode.SHIPMENT_CREATED_QTY_EXCEEDED);
         }
 
-        Shipment shipment = Shipment.create(sku, location, request.getQuantity(), inventory.getId());
+        Shipment shipment = Shipment.create(sku, location, request.getQuantity(), inventory.getInventoryId());
         shipmentRepository.save(shipment);
 
         return ShipmentResponse.from(shipment);
@@ -77,8 +74,7 @@ public class ShipmentServiceImpl implements ShipmentService {
             throw new WarePulseException(ErrorCode.SHIPMENT_INSPECTION_INVALID_STATUS_CREATED);
         }
 
-        Long inventoryId = getInventory(shipment);
-        reserveInventoryEvent(pickedQty, shipment, inventoryId);
+        sendInventoryEvent(shipment, ShipmentReason.RESERVED, pickedQty);
 
         shipment.picking(pickedQty, username);
         return ShipmentResponse.from(shipment);
@@ -92,10 +88,9 @@ public class ShipmentServiceImpl implements ShipmentService {
             throw new WarePulseException(ErrorCode.SHIPMENT_INSPECTION_NOT_COMPLETED);
         }
 
-        Long inventoryId = getInventory(shipment);
-        decreaseInventoryEvent(inventoryId, shipment);
+        sendInventoryEvent(shipment, ShipmentReason.SHIP_OUT, shipment.getPickedQty());
 
-        shipment.shipped(inventoryId, username);
+        shipment.shipped(username);
 
         return ShipmentResponse.from(shipment);
     }
@@ -109,8 +104,7 @@ public class ShipmentServiceImpl implements ShipmentService {
         }
 
         if (shipment.getStatus() == ShipmentStatus.PICKING) {
-            Long inventoryId = getInventory(shipment);
-            releaseInventoryEvent(shipment, inventoryId);
+            sendInventoryEvent(shipment, ShipmentReason.RESERVED_CANCEL, shipment.getPickedQty());
         }
 
         shipment.canceled();
@@ -122,39 +116,13 @@ public class ShipmentServiceImpl implements ShipmentService {
                 .orElseThrow(() -> new WarePulseException(ErrorCode.SHIPMENT_NOT_FOUND));
     }
 
-    private Long getInventory(Shipment shipment) {
-        return inventoryRepository.findBySkuIdAndLocationId(shipment.getSku().getId(), shipment.getLocation().getId())
-                .map(Inventory::getId)
-                .orElseThrow(() -> new WarePulseException(ErrorCode.INVENTORY_NOT_FOUND));
-    }
-
-    private void decreaseInventoryEvent(Long inventoryId, Shipment shipment) {
-        DecreaseInventoryDto dto = DecreaseInventoryDto.of(
-                inventoryId,
-                shipment.getId(),
-                DecreaseReason.SHIP_OUT,
-                shipment.getPickedQty()
+    private void sendInventoryEvent(Shipment shipment, ShipmentReason reason, int quantity) {
+        ShipmentDto dto = ShipmentDto.of(
+                shipment.getSku().getId(),
+                shipment.getLocation().getId(),
+                reason,
+                quantity
         );
-        inventoryEventService.shipment(dto);
-    }
-
-    private void reserveInventoryEvent(int pickedQty, Shipment shipment, Long inventoryId) {
-        ReserveInventoryDto dto = ReserveInventoryDto.of(
-                inventoryId,
-                shipment.getId(),
-                DecreaseReason.RESERVED,
-                pickedQty
-        );
-        inventoryEventService.reserve(dto);
-    }
-
-    private void releaseInventoryEvent(Shipment shipment, Long inventoryId) {
-        ReleaseInventoryDto dto = ReleaseInventoryDto.of(
-                inventoryId,
-                shipment.getId(),
-                IncreaseReason.RESERVED_CANCEL,
-                shipment.getPickedQty()
-        );
-        inventoryEventService.release(dto);
+        kafkaProducer.send(INVENTORY_TOPIC, dto);
     }
 }
