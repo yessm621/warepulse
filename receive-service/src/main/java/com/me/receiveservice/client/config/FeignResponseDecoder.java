@@ -5,34 +5,39 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.me.receiveservice.exception.ApiResponse;
 import com.me.receiveservice.exception.ErrorCode;
 import com.me.receiveservice.exception.ReceiveServiceException;
-import feign.FeignException;
 import feign.Response;
 import feign.codec.Decoder;
-import feign.optionals.OptionalDecoder;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Type;
 
+@Slf4j
 public class FeignResponseDecoder implements Decoder {
 
-    private final Decoder delegate;
     private final ObjectMapper objectMapper;
 
-    public FeignResponseDecoder(Decoder delegate, ObjectMapper objectMapper) {
-        this.delegate = delegate;
+    public FeignResponseDecoder(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
     }
 
     @Override
-    public Object decode(Response response, Type type) throws IOException, FeignException {
-        // 실제 API 응답 타입이 ApiResponse<T>인 경우 처리
-        JavaType javaType = objectMapper.getTypeFactory().constructParametricType(ApiResponse.class, (Class<?>) type);
-        ApiResponse<?> apiResponse = (ApiResponse<?>) delegate.decode(response, javaType);
-
-        if ("fail".equals(apiResponse.getStatus())) {
-            throw new ReceiveServiceException(ErrorCode.EXTERNAL_API_ERROR);
+    public Object decode(Response response, Type type) throws IOException {
+        if (response.body() == null) {
+            return null;
         }
 
-        return apiResponse.getData(); // T (SkuResponse 등)만 반환
+        try (InputStream is = response.body().asInputStream()) {
+            JavaType dataType = objectMapper.getTypeFactory().constructType(type);
+            JavaType apiResponseType = objectMapper.getTypeFactory().constructParametricType(ApiResponse.class, dataType);
+
+            ApiResponse<?> apiResponse = objectMapper.readValue(is, apiResponseType);
+            if ("fail".equals(apiResponse.getStatus())) {
+                throw new ReceiveServiceException(ErrorCode.EXTERNAL_API_ERROR);
+            }
+
+            return apiResponse.getData();
+        }
     }
 }

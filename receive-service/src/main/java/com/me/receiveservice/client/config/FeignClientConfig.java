@@ -29,12 +29,21 @@ public class FeignClientConfig {
                 if (authorizationHeader != null) {
                     requestTemplate.header("Authorization", authorizationHeader);
                 }
+
+                String username = request.getHeader("X-User-Name");
+                String role = request.getHeader("X-User-Role");
+                if (username != null) {
+                    requestTemplate.header("X-User-Name", username);
+                }
+                if (role != null) {
+                    requestTemplate.header("X-User-Role", role);
+                }
             }
         };
     }
 
     @Bean
     public Decoder feignDecoder(ObjectFactory<HttpMessageConverters> messageConverters, ObjectMapper objectMapper) {
-        return new FeignResponseDecoder(new OptionalDecoder(new ResponseEntityDecoder(new SpringDecoder(messageConverters))), objectMapper);
+        return new FeignResponseDecoder(objectMapper);
     }
 }

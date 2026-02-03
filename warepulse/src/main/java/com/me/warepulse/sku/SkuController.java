@@ -31,15 +31,15 @@ public class SkuController {
         return ResponseEntity.ok(ApiResponse.success(skus));
     }
 
-    @GetMapping("/{sku_id}")
-    public ResponseEntity<ApiResponse<SkuResponse>> findSkuById(@PathVariable("sku_id") Long skuId) {
+    @GetMapping("/{skuId}")
+    public ResponseEntity<ApiResponse<SkuResponse>> findSkuById(@PathVariable("skuId") Long skuId) {
         SkuResponse sku = skuService.findSkuById(skuId);
         return ResponseEntity.ok(ApiResponse.success(sku));
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/{sku_id}")
-    public ResponseEntity<ApiResponse> deleteSku(@PathVariable("sku_id") Long skuId) {
+    @DeleteMapping("/{skuId}")
+    public ResponseEntity<ApiResponse> deleteSku(@PathVariable("skuId") Long skuId) {
         skuService.deleteSku(skuId);
         return ResponseEntity.ok(ApiResponse.successWithNoContent());
     }
