@@ -1,4 +1,4 @@
-package com.me.receiveservice.client;
+package com.me.receiveservice.client.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,6 +1,7 @@
 package com.me.inventoryservice.service;
 
 import com.me.inventoryservice.controller.response.InventoryResponse;
+import com.me.inventoryservice.controller.response.QuantityResponse;
 import com.me.inventoryservice.exception.ErrorCode;
 import com.me.inventoryservice.exception.InventoryServiceException;
 import com.me.inventoryservice.repository.InventoryRepository;
@@ -16,8 +17,9 @@ public class InventoryServiceImpl implements InventoryService {
     private final InventoryRepository inventoryRepository;
 
     @Override
-    public int totalQuantity(Long locationId) {
-        return inventoryRepository.sumQuantityByLocation(locationId);
+    public QuantityResponse totalQuantity(Long locationId) {
+        int quantity = inventoryRepository.sumQuantityByLocation(locationId);
+        return QuantityResponse.from(quantity);
     }
 
     @Override

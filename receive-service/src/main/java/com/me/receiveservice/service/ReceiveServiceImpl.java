@@ -67,7 +67,7 @@ public class ReceiveServiceImpl implements ReceiveService {
 
         int locationCapacity = warepulseClient.getLocation(receive.getLocationId()).getCapacity();
 
-        int sumQuantity = inventoryServiceClient.getSumQuantityByLocation(receive.getLocationId());
+        int sumQuantity = inventoryServiceClient.getSumQuantityByLocation(receive.getLocationId()).getQuantity();
         if (locationCapacity < (sumQuantity + receivedQty)) {
             throw new ReceiveServiceException(ErrorCode.LOCATION_CAPACITY_EXCEEDED);
         }
