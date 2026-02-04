@@ -26,7 +26,7 @@ public class KafkaConsumer {
         if (dto == null) return;
 
         switch (dto.getReason()) {
-            case PURCHASE_INBOUND -> inventoryEventService.receive(dto);
+            case PURCHASE -> inventoryEventService.receive(dto);
             default -> log.warn("Unknown shipment reason: {}", dto.getReason());
         }
     }

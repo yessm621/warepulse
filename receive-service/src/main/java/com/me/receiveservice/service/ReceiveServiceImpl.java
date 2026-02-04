@@ -87,7 +87,7 @@ public class ReceiveServiceImpl implements ReceiveService {
         ReceiveDto dto = ReceiveDto.of(
                 receive.getSkuId(),
                 receive.getLocationId(),
-                ReceiveReason.PURCHASE_INBOUND,
+                ReceiveReason.PURCHASE,
                 receive.getReceivedQty()
         );
         kafkaProducer.send(INVENTORY_TOPIC, dto);
