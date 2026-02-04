@@ -1,4 +1,4 @@
-package com.me.inventoryservice.entity.EventEnum;
+package com.me.receiveservice.messagequeue.receive;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

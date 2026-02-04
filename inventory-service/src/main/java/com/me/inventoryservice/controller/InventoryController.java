@@ -1,9 +1,12 @@
 package com.me.inventoryservice.controller;
 
 import com.me.inventoryservice.controller.response.InventoryResponse;
+import com.me.inventoryservice.controller.response.QuantityResponse;
+import com.me.inventoryservice.exception.ApiResponse;
 import com.me.inventoryservice.service.InventoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,12 +27,14 @@ public class InventoryController {
     }
 
     @GetMapping("/locations/{locationId}/total-quantity")
-    public int totalQuantity(@PathVariable("locationId") Long locationId) {
-        return inventoryService.totalQuantity(locationId);
+    public ResponseEntity<ApiResponse<QuantityResponse>> totalQuantity(@PathVariable("locationId") Long locationId) {
+        QuantityResponse response = inventoryService.totalQuantity(locationId);
+        return ResponseEntity.ok(ApiResponse.success(response));
     }
 
     @GetMapping("/skus/{skuId}/locations/{locationId}")
-    public InventoryResponse getInventory(@PathVariable("skuId") Long skuId, @PathVariable("locationId") Long locationId) {
-        return inventoryService.getInventory(skuId, locationId);
+    public ResponseEntity<ApiResponse<InventoryResponse>> getInventory(@PathVariable("skuId") Long skuId, @PathVariable("locationId") Long locationId) {
+        InventoryResponse response = inventoryService.getInventory(skuId, locationId);
+        return ResponseEntity.ok(ApiResponse.success(response));
     }
 }
