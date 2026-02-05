@@ -1,9 +1,9 @@
 package com.me.receiveservice.controller;
 
 import com.me.receiveservice.config.CustomUserDetails;
-import com.me.receiveservice.dto.ReceiveInspectedRequest;
-import com.me.receiveservice.dto.ReceiveRequest;
-import com.me.receiveservice.dto.ReceiveResponse;
+import com.me.receiveservice.controller.dto.ReceiveInspectedRequest;
+import com.me.receiveservice.controller.dto.ReceiveRequest;
+import com.me.receiveservice.controller.dto.ReceiveResponse;
 import com.me.receiveservice.exception.ApiResponse;
 import com.me.receiveservice.service.ReceiveService;
 import lombok.RequiredArgsConstructor;

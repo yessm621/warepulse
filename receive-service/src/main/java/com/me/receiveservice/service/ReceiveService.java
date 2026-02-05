@@ -1,7 +1,7 @@
 package com.me.receiveservice.service;
 
-import com.me.receiveservice.dto.ReceiveRequest;
-import com.me.receiveservice.dto.ReceiveResponse;
+import com.me.receiveservice.controller.dto.ReceiveRequest;
+import com.me.receiveservice.controller.dto.ReceiveResponse;
 
 import java.util.List;
 

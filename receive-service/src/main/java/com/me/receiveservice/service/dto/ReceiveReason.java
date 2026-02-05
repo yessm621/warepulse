@@ -1,4 +1,4 @@
-package com.me.receiveservice.messagequeue.receive;
+package com.me.receiveservice.service.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
