@@ -1,4 +1,4 @@
-package com.me.receiveservice.messagequeue.receive;
+package com.me.receiveservice.service.dto;
 
 import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;

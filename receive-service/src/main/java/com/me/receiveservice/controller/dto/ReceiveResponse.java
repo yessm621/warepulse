@@ -1,4 +1,4 @@
-package com.me.receiveservice.dto;
+package com.me.receiveservice.controller.dto;
 
 import com.me.receiveservice.entity.Receive;
 import lombok.AllArgsConstructor;

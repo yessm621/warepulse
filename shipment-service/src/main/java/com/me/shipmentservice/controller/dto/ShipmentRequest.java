@@ -1,4 +1,4 @@
-package com.me.receiveservice.dto;
+package com.me.shipmentservice.controller.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,9 +7,9 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ReceiveRequest {
+public class ShipmentRequest {
 
     private Long locationId;
     private Long skuId;
-    private int expectedQty;
+    private int quantity;
 }
