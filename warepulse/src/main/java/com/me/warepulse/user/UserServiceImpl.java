@@ -2,10 +2,7 @@ package com.me.warepulse.user;
 
 import com.me.warepulse.exception.ErrorCode;
 import com.me.warepulse.exception.WarePulseException;
-import com.me.warepulse.user.dto.SignupRequest;
-import com.me.warepulse.user.dto.SignupResponse;
-import com.me.warepulse.user.dto.UserListResponse;
-import com.me.warepulse.user.dto.UserRoleRequest;
+import com.me.warepulse.user.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -50,6 +47,13 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                 .stream()
                 .map(UserListResponse::from)
                 .toList();
+    }
+
+    @Override
+    public UserResponse findUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new WarePulseException(ErrorCode.USER_NOT_FOUND));
+        return UserResponse.from(user);
     }
 
     @Transactional
