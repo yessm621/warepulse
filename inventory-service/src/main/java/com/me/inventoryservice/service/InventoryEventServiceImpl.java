@@ -5,6 +5,7 @@ import com.me.inventoryservice.entity.InventoryEvent;
 import com.me.inventoryservice.entity.InventoryEventType;
 import com.me.inventoryservice.exception.ErrorCode;
 import com.me.inventoryservice.exception.InventoryServiceException;
+import com.me.inventoryservice.messagequeue.dto.AdjustmentDto;
 import com.me.inventoryservice.messagequeue.dto.ReceiveDto;
 import com.me.inventoryservice.messagequeue.dto.ShipmentDto;
 import com.me.inventoryservice.repository.InventoryEventRepository;
@@ -56,12 +57,13 @@ public class InventoryEventServiceImpl implements InventoryEventService {
         saveEvent(inventory, InventoryEventType.RELEASE, dto.getReservedQty(), dto.getReason());
     }
 
-    /*@Override
-    public void adjustment(AdjustmentInventoryDto dto) {
-        Inventory inventory = getInventory(dto.getInventoryId());
+    @Override
+    public void adjustment(AdjustmentDto dto) {
+        Inventory inventory = inventoryRepository.findById(dto.getInventoryId())
+                .orElseThrow(() -> new InventoryServiceException(ErrorCode.INVENTORY_NOT_FOUND));
         inventory.adjustment(dto.getDelta());
         saveEvent(inventory, InventoryEventType.ADJUSTED, dto.getDelta(), dto.getReason());
-    }*/
+    }
 
     private Inventory getInventory(Long skuId, Long locationId) {
         return inventoryRepository.findBySkuIdAndLocationId(skuId, locationId)
