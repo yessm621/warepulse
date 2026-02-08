@@ -1,10 +1,7 @@
 package com.me.warepulse.user;
 
 import com.me.warepulse.exception.ApiResponse;
-import com.me.warepulse.user.dto.SignupRequest;
-import com.me.warepulse.user.dto.SignupResponse;
-import com.me.warepulse.user.dto.UserListResponse;
-import com.me.warepulse.user.dto.UserRoleRequest;
+import com.me.warepulse.user.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -31,6 +28,12 @@ public class UserController {
     public ResponseEntity<ApiResponse<List<UserListResponse>>> getUsers() {
         List<UserListResponse> users = userService.findUsers();
         return ResponseEntity.ok(ApiResponse.success(users));
+    }
+
+    @GetMapping("/{userId}")
+    public ResponseEntity<ApiResponse<UserResponse>> getUser(@PathVariable("userId") Long userId) {
+        UserResponse user = userService.findUser(userId);
+        return ResponseEntity.ok(ApiResponse.success(user));
     }
 
     @PreAuthorize("hasRole('ADMIN')")

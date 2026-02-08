@@ -2,6 +2,7 @@ package com.me.inventoryservice.messagequeue;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.me.inventoryservice.messagequeue.dto.AdjustmentDto;
 import com.me.inventoryservice.messagequeue.dto.ReceiveDto;
 import com.me.inventoryservice.messagequeue.dto.ShipmentDto;
 import com.me.inventoryservice.service.InventoryEventService;
@@ -43,6 +44,15 @@ public class KafkaConsumer {
             case RESERVED_CANCEL -> inventoryEventService.release(dto);
             default -> log.warn("Unknown shipment reason: {}", dto.getReason());
         }
+    }
+
+    @KafkaListener(topics = "inventory-adjustment-topic")
+    @Transactional
+    public void adjustment(String kafkaMessage) {
+        AdjustmentDto dto = deserialize(kafkaMessage, AdjustmentDto.class);
+        if (dto == null) return;
+
+        inventoryEventService.adjustment(dto);
     }
 
     private <T> T deserialize(String kafkaMessage, Class<T> clazz) {
