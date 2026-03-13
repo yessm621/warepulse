@@ -81,3 +81,13 @@
 ![이미지 설명](https://github.com/user-attachments/assets/7afa8f0d-5e19-4b3c-8023-92393d760a0b)
 
 ---
+
+## 📌 API 명세서 (Swagger API)
+
+![1](https://github.com/user-attachments/assets/b5848eec-6e1c-4091-b3a7-2159433d8f3f)
+
+![2](https://github.com/user-attachments/assets/b7483366-2047-4b20-bbcc-a4f7915966cb)
+
+![3](https://github.com/user-attachments/assets/0c51bd31-a225-41f1-85ee-769bdac1d0e3)
+
+![4](https://github.com/user-attachments/assets/7b0ffd1d-39c3-453b-a444-2d5e26d6f44d)
